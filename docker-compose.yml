@@ -1,0 +1,15 @@
+version: "3.7"
+
+
+services:
+  condo_parser:
+    build:
+      context: .
+      dockerfile: Dockerfile.parsers
+    container_name: condo_parser
+    hostname: condo_parser
+    restart: always
+    volumes:
+      - .:/condos_parser
+    ports:
+      - 40000:40000

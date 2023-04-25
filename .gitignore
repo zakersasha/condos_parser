@@ -1,0 +1,9 @@
+.idea
+venv
+env
+
+.env
+
+*.JSON
+*.json
+*.JPG
