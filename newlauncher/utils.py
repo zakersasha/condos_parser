@@ -1,5 +1,7 @@
+import json
+from datetime import datetime
+
 import requests
-from aiohttp import ContentTypeError
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 from config import Config
@@ -9,7 +11,7 @@ async def get_detail_page_links():
     """Gather detail condos links."""
     detail_links = []
     for page in Config.NEW_LAUNCHER_PAGES.split(','):
-        r = requests.get(f'https://newlauncher.com.sg/page={page}&sort_by=NA&')
+        r = requests.get(f'https://newlauncher.com.sg/page={page}&sort_by=NA&', headers=Config.NEW_LAUNCHER_HEADERS)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         for i in soup.find_all('a', class_='detailhref'):
@@ -41,14 +43,16 @@ async def gather_project_details(soup, url):
             content = detail.find_all("p")
             if content:
                 items = [item.text.replace('\n', '') for item in content]
-                developers = [x for x in content[-1].text.split('\n') if x]
+                developers = str([x for x in content[-1].text.split('\n') if x]).replace('[', '').replace(']',
+                                                                                                          '').replace(
+                    "'", "")
 
                 await gather_project_details_block(details_data, items, developers)
 
     gallery_links = []
     gallery = soup.find("div", {"id": "media-thumbnails-gallery"}).find_all("img")
     for image in gallery:
-        gallery_links.append(image['src'].replace(' ', '%20'))
+        gallery_links.append({"url": image['src'].replace(' ', '%20')})
     details_data['images'] = gallery_links
 
     return details_data
@@ -57,10 +61,11 @@ async def gather_project_details(soup, url):
 async def gather_project_details_block(details_data, content, developers):
     details_data['address'] = content[0]
     details_data['district'] = content[1].split(' ')[0]
-    details_data['previewing_start_date'] = content[6]
-    details_data['date_of_completion'] = content[7].replace(' or earlier', '')
+    details_data['previewing_start_date'] = await str_to_datetime(content[6])
+    details_data['type'] = content[4]
+    details_data['date_of_completion'] = await str_to_datetime(content[7].replace(' or earlier', ''))
     details_data['tenure'] = content[8]
-    details_data['type'] = content[5].split(' ')[0]
+    details_data['units_number'] = int(content[5].split(' ')[0])
     details_data['units_size'] = content[5].split(' ')[3]
     details_data['architect'] = content[10]
     details_data['developer'] = developers
@@ -80,7 +85,7 @@ async def gather_project_facilities(soup):
     site_plans_attachments = []
     attachments = soup.find("div", {"id": "site-plan-gallery"}).find_all("a")
     for attachment in attachments:
-        site_plans_attachments.append(attachment['href'].replace(' ', '%20'))
+        site_plans_attachments.append({"url": attachment['href'].replace(' ', '%20')})
 
     facilities_data['facilities'] = project_facilities
     facilities_data['site_plans_attachments'] = site_plans_attachments
@@ -96,7 +101,7 @@ async def gather_project_amenities(soup):
     try:
         lm_attachments = soup.find("div", {"id": "location-map-gallery"}).find_all("a")
         for attachment in lm_attachments:
-            location_map_attachments.append(attachment['href'].replace(' ', '%20'))
+            location_map_attachments.append({"url": attachment['href'].replace(' ', '%20')})
     except AttributeError:
         pass
 
@@ -131,6 +136,12 @@ async def gather_project_amenities(soup):
 async def gather_project_units(soup):
     project_units = []
     units = soup.find("div", {"id": "section-5"}).find("tbody")
+
+    units_site_plans = []
+    attachments = soup.find("div", {"id": "unit-mix-gallery"}).find_all("a")
+    for attachment in attachments:
+        units_site_plans.append({"url": attachment['href'].replace(' ', '%20')})
+
     for unit in units.find_all('tr'):
         unit_data = [ele for ele in unit.text.replace('\n', '  ').replace('   ', '  ').split('  ') if ele.strip()]
 
@@ -140,13 +151,15 @@ async def gather_project_units(soup):
         if '-' not in unit_data[2]:
             result_data = {'unit_type': unit_data[0],
                            'all_units': int(unit_data[1]),
-                           'size_max': int(unit_data[2].replace(',', '')),
+                           'size_min': int(unit_data[2].replace(',', '')),
+                           'units_site_plans': units_site_plans
                            }
         else:
             result_data = {'unit_type': unit_data[0],
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].split('-')[0].replace(' ', '').replace(',', '')),
                            'size_max': int(unit_data[2].split('-')[1].replace(' ', '').replace(',', '')),
+                           'units_site_plans': units_site_plans
                            }
         project_units.append(result_data)
     return project_units
@@ -190,13 +203,13 @@ async def gather_project_balances(soup):
 
         if not '-' in balance_data[4]:
             if not '-' in balance_data[3]:
-                result_data = {'unit_type': balance_data[0],
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].replace('$', '').replace(',', '.')),
                                'price_min': float(balance_data[4].replace('$', '').replace('M', '').replace(' ', '')),
                                }
             else:
-                result_data = {'unit_type': balance_data[0],
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].split('-')[0].replace('$', '').replace(',', '.')),
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),
@@ -205,7 +218,7 @@ async def gather_project_balances(soup):
 
         else:
             if not '-' in balance_data[3]:
-                result_data = {'unit_type': balance_data[0],
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].replace('$', '').replace(',', '.')),
                                'price_min': float(
@@ -214,7 +227,7 @@ async def gather_project_balances(soup):
                                    balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')),
                                }
             else:
-                result_data = {'unit_type': balance_data[0],
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].split('-')[0].replace('$', '').replace(',', '.')),
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),
@@ -229,26 +242,22 @@ async def gather_project_balances(soup):
 
 # FLOOR PLANS
 async def gather_floor_plans(soup):
-    project_floor_plans = {}
     floor_plans = soup.find("div", {"id": "section-7"}).find("tbody")
-    for floor_plan in floor_plans.find_all('tr'):
-        floor_plan_data = [ele for ele in floor_plan.text.replace('\n', '  ').replace('   ', '  ').split('  ') if
-                           ele.strip()]
+    try:
+        script_data = floor_plans.find_all('script')[1].string.replace(';', '')
+        floor_plans_json = json.loads(script_data.split('var unit_fp = ')[1])
+    except IndexError:
+        script_data = floor_plans.find_all('script')[2].string.replace(';', '')
+        floor_plans_json = json.loads(script_data.split('var unit_fp = ')[1])
 
-        if floor_plan_data[0] in project_floor_plans:
-            project_floor_plans[floor_plan_data[0]].append(floor_plan_data[1].replace(' ', ''))
-        else:
-            project_floor_plans[floor_plan_data[0]] = [floor_plan_data[1].replace(' ', '')]
-
-    return project_floor_plans
+    return floor_plans_json
 
 
 # DATA MERGING
-async def merge_gathered_data(details, facilities, amenities, attachments, overall, units):
+async def merge_gathered_data(details, facilities, attachments, overall):
     complete_response = {**details, **facilities, **overall,
-                         'amenities': amenities,
                          'location_map_attachments': attachments,
-                         'units': units}
+                         }
 
     return complete_response
 
@@ -256,19 +265,53 @@ async def merge_gathered_data(details, facilities, amenities, attachments, overa
 async def merge_units_and_balances(units, balances):
     for unit in units:
         unit_type = unit['unit_type']
-        try:
-            res_dict = next(item for item in balances if item["unit_type"] == unit_type)
-        except StopIteration:
-            continue
-        unit.update(res_dict)
+        unit['floor_plans'] = []
+
+        for balance in balances:
+            if balance['unit_type'] == unit_type:
+                unit.update(balance)
+
     return units
 
 
 async def merge_units_and_floor_plans(units, plans):
-    for unit in units:
-        floor_plans = plans.get(unit['unit_type'])
-        if not floor_plans:
-            continue
-        unit['floor_plans'] = floor_plans
-
+    for plan in plans:
+        unit = next((item for item in units if item["unit_type"] == plan['unit_name']), None)
+        if unit:
+            unit['floor_plans'].append(plan['unit_type'])
     return units
+
+
+async def str_to_datetime(date):
+    try:
+        res_date = datetime.strptime(date.replace('th', '').replace('Nov', 'November') \
+                                     .replace('Dec', 'December') \
+                                     .replace('Jan', 'January') \
+                                     .replace('Feb', 'February') \
+                                     .replace('Mar', 'March') \
+                                     .replace('Apr', 'April') \
+                                     .replace('Sep', 'September') \
+                                     .replace('Oct', 'October') \
+                                     .replace('Jun', 'June') \
+                                     .replace('Jul', 'July') \
+                                     .replace('Aug', 'August') \
+                                     .replace('1st', '1') \
+                                     .replace('nd', '') \
+                                     .replace('rd', ''), '%d %B %Y')
+    except ValueError:
+        res_date = datetime.strptime(date[:-1].replace('th', '').replace('Nov', 'November') \
+                                     .replace('Dec', 'December') \
+                                     .replace('Jan', 'January') \
+                                     .replace('Feb', 'February') \
+                                     .replace('Mar', 'March') \
+                                     .replace('Apr', 'April') \
+                                     .replace('Sep', 'September') \
+                                     .replace('Oct', 'October') \
+                                     .replace('Jun', 'June') \
+                                     .replace('Jul', 'July') \
+                                     .replace('Aug', 'August') \
+                                     .replace('1st', '1') \
+                                     .replace('nd', '') \
+                                     .replace('rd', ''), '%d %B %Y')
+
+    return res_date

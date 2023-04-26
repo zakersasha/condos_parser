@@ -1,7 +1,10 @@
+import json
+
 import requests
 from bs4 import BeautifulSoup
 
 from config import Config
+from newlauncher.db_queries import store_data_airtable
 from newlauncher.tg_reports import send_tg_report
 from newlauncher.utils import (get_detail_page_links,
                                gather_project_details,
@@ -33,9 +36,8 @@ async def parse_new_launcher():
 
         complete_response = await merge_gathered_data(details,
                                                       facilities,
-                                                      amenities,
                                                       attachments,
-                                                      overall,
-                                                      units_and_floor_plans)
+                                                      overall)
 
+        await store_data_airtable(complete_response, units_and_floor_plans, amenities)
         await send_tg_report(complete_response)
