@@ -314,4 +314,4 @@ async def str_to_datetime(date):
                                      .replace('nd', '') \
                                      .replace('rd', ''), '%d %B %Y')
 
-    return res_date
+    return res_date.strftime('%Y-%m-%d')

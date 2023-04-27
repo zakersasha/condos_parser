@@ -5,8 +5,8 @@ import requests
 from config import Config
 
 
-async def send_tg_report(data):
-    message = f'✅ {data["name"]}\n\n' \
+async def send_tg_report(data, label):
+    message = f'✅ {data["name"]} *{label}\n\n' \
               f'👉 District: {data["district"]} {data["address"]}\n' \
               f'🗓 Start date of previews: {data["previewing_start_date"]}\n\n' \
               f'🏡 Condo: {data["link_to_condo"]}\n'

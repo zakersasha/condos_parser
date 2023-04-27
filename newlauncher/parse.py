@@ -1,5 +1,3 @@
-import json
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -39,5 +37,5 @@ async def parse_new_launcher():
                                                       attachments,
                                                       overall)
 
-        await store_data_airtable(complete_response, units_and_floor_plans, amenities)
-        await send_tg_report(complete_response)
+        label = await store_data_airtable(complete_response, units_and_floor_plans, amenities)
+        await send_tg_report(complete_response, label)
