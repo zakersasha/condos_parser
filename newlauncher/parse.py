@@ -19,6 +19,7 @@ async def parse_new_launcher():
     links = await get_detail_page_links()
 
     for link in links:
+        print(link)
         r = requests.get(link, headers=Config.NEW_LAUNCHER_HEADERS)
         soup = BeautifulSoup(r.text, "html.parser")
 

@@ -26,9 +26,7 @@ async def gather_project_details(soup, url):
     details_data['name'] = name
     details_data['link_to_condo'] = url
 
-    project_details = soup.find("div", {"id": "section-2"})
-    for e in soup.findAll('br'):
-        e.extract()
+    project_details = soup.find("div", {"id": "section-2"}).find_all("p")
 
     try:
         brochure = soup.find("a", class_='btn btn-sm btn-outline-primary d-inline-flex align-items-center')['href']
@@ -36,18 +34,12 @@ async def gather_project_details(soup, url):
     except TypeError:
         details_data['link_to_brochure'] = None
 
-    for detail in project_details:
-        if isinstance(detail, NavigableString):
-            continue
-        if isinstance(detail, Tag):
-            content = detail.find_all("p")
-            if content:
-                items = [item.text.replace('\n', '') for item in content]
-                developers = str([x for x in content[-1].text.split('\n') if x]).replace('[', '').replace(']',
-                                                                                                          '').replace(
-                    "'", "")
+    items = [item.text.replace('\n', '') for item in project_details]
+    developers = str([x for x in project_details[-1].text.split('\n') if x]).replace('[', '').replace(']',
+                                                                                              '').replace(
+        "'", "")
 
-                await gather_project_details_block(details_data, items, developers)
+    await gather_project_details_block(details_data, items, developers)
 
     gallery_links = []
     gallery = soup.find("div", {"id": "media-thumbnails-gallery"}).find_all("img")

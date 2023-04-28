@@ -8,9 +8,12 @@ from config import Config
 async def store_data_airtable(main, units, amenities):
     records = await get_all_records()
 
-    exists_data = next(
-        ([item["id"], item["fields"]['units'], item["fields"]['amenities']] for item in records['records'] if
-         item["fields"]['name'] == main['name']), None)
+    try:
+        exists_data = next(
+            ([item["id"], item["fields"]['units'], item["fields"]['amenities']] for item in records['records'] if
+             item["fields"]['name'] == main['name']), None)
+    except KeyError:
+        exists_data = None
 
     if exists_data:
         label = 'Updated'
