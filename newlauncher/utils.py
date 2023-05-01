@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 import requests
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup
 
 from config import Config
 
@@ -22,7 +22,7 @@ async def get_detail_page_links():
 # PROJECT DETAILS
 async def gather_project_details(soup, url):
     details_data = {}
-    name = soup.find("h1").text
+    name = soup.find("h1").text.replace('[email protected]', 'LIV@MB')
     details_data['name'] = name
     details_data['link_to_condo'] = url
 
@@ -30,14 +30,15 @@ async def gather_project_details(soup, url):
 
     try:
         brochure = soup.find("a", class_='btn btn-sm btn-outline-primary d-inline-flex align-items-center')['href']
-        details_data['link_to_brochure'] = brochure
+        details_data['brochure'] = [{"url": brochure.replace(' ', '%20')}]
     except TypeError:
-        details_data['link_to_brochure'] = None
+        details_data['brochure'] = None
 
     items = [item.text.replace('\n', '') for item in project_details]
-    developers = str([x for x in project_details[-1].text.split('\n') if x]).replace('[', '').replace(']',
-                                                                                              '').replace(
-        "'", "")
+    developers = str([x for x in project_details[-1].text.split('\n') if x]) \
+        .replace('[', '') \
+        .replace(']', '') \
+        .replace("'", "")
 
     await gather_project_details_block(details_data, items, developers)
 
@@ -56,7 +57,7 @@ async def gather_project_details_block(details_data, content, developers):
     details_data['previewing_start_date'] = await str_to_datetime(content[6])
     details_data['type'] = content[4]
     details_data['date_of_completion'] = await str_to_datetime(content[7].replace(' or earlier', ''))
-    details_data['tenure'] = content[8]
+    details_data['tenure'] = content[8].replace('99 YearsLeasehold ', '99 YearsLeasehold')
     details_data['units_number'] = int(content[5].split(' ')[0])
     details_data['units_size'] = content[5].split(' ')[3]
     details_data['architect'] = content[10]

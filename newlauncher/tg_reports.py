@@ -11,8 +11,8 @@ async def send_tg_report(data, label):
               f'🗓 Start date of previews: {data["previewing_start_date"]}\n\n' \
               f'🏡 Condo: {data["link_to_condo"]}\n'
 
-    if data.get('link_to_brochure'):
-        message += f'📔 Brochure: {data["link_to_brochure"]}\n'
+    if data.get('brochure'):
+        message += f'📔 Brochure: {data["brochure"]["url"]}\n'
 
     bot_token = Config.TG_BOT_TOKEN
 
