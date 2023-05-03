@@ -12,7 +12,7 @@ async def send_tg_report(data, label):
               f'🏡 Condo: {data["link_to_condo"]}\n'
 
     if data.get('brochure'):
-        message += f'📔 Brochure: {data["brochure"]["url"]}\n'
+        message += f'📔 Brochure: {data["brochure"][0]["url"]}\n'
 
     bot_token = Config.TG_BOT_TOKEN
 

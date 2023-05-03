@@ -26,7 +26,7 @@ async def parse_new_launcher():
         details = await gather_project_details(soup, link)
         facilities = await gather_project_facilities(soup)
         amenities, attachments = await gather_project_amenities(soup)
-        units = await gather_project_units(soup)
+        units = await gather_project_units(soup, details)
         balances, overall = await gather_project_balances(soup)
         plans = await gather_floor_plans(soup)
 

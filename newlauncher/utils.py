@@ -126,7 +126,7 @@ async def gather_project_amenities(soup):
 
 
 # PROJECT UNITS
-async def gather_project_units(soup):
+async def gather_project_units(soup, details):
     project_units = []
     units = soup.find("div", {"id": "section-5"}).find("tbody")
 
@@ -145,14 +145,18 @@ async def gather_project_units(soup):
             result_data = {'unit_type': unit_data[0],
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].replace(',', '')),
-                           'units_site_plans': units_site_plans
+                           'units_site_plans': units_site_plans,
+                           'district': details['district'],
+                           'date_of_completion': details['date_of_completion']
                            }
         else:
             result_data = {'unit_type': unit_data[0],
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].split('-')[0].replace(' ', '').replace(',', '')),
                            'size_max': int(unit_data[2].split('-')[1].replace(' ', '').replace(',', '')),
-                           'units_site_plans': units_site_plans
+                           'units_site_plans': units_site_plans,
+                           'district': details['district'],
+                           'date_of_completion': details['date_of_completion']
                            }
         project_units.append(result_data)
     return project_units
