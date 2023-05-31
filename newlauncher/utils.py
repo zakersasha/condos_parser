@@ -202,15 +202,22 @@ async def gather_project_balances(soup):
             if not '-' in balance_data[3]:
                 result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
-                               'psf_min': float(balance_data[3].replace('$', '').replace(',', '.')),
-                               'price_min': float(balance_data[4].replace('$', '').replace('M', '').replace(' ', '')),
+                               'psf_min': float(balance_data[3].replace('$', '').replace(',', '.').replace(
+                                   'To Be Confirmed', '0')),
+                               'price_min': float(
+                                   balance_data[4].replace('$', '').replace('M', '').replace(' ', '').replace(
+                                       'ToBeConfirmed', '0')),
                                }
             else:
                 result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
                                'available_units': int(balance_data[1]),
-                               'psf_min': float(balance_data[3].split('-')[0].replace('$', '').replace(',', '.')),
+                               'psf_min': float(
+                                   balance_data[3].split('-')[0].replace('$', '').replace(',', '.').replace(
+                                       'To Be Confirmed', '0')),
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),
-                               'price_min': float(balance_data[4].replace('$', '').replace('M', '').replace(' ', ''))
+                               'price_min': float(
+                                   balance_data[4].replace('$', '').replace('M', '').replace(' ', '').replace(
+                                       'ToBeConfirmed', '0'))
                                }
 
         else:
