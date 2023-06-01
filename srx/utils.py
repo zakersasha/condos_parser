@@ -28,9 +28,9 @@ async def gather_projects_links(max_page):
 
 async def gather_main_table_data(url, soup):
     images = []
-    images_data = soup.find_all("div", {"class": "photo-box-item image"})
+    images_data = soup.find("div", {"id": "listing-photo-gallery-scroller-container"}).find_all("img")
     for image in images_data:
-        images.append({"url": image["data-url"].replace(' ', '%20')})
+        images.append({"url": image["src"].replace(' ', '%20')})
     try:
         sold_units = soup.find("div", {"id": "total-units-bar-sold"}).text.split('%')[0]
     except AttributeError:
