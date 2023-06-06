@@ -10,6 +10,7 @@ if __name__ == '__main__':
     schedule = AsyncIOScheduler()
     # New launcher
     schedule.add_job(parse_new_launcher, 'cron', hour=12)
+    # Srx
     schedule.add_job(parse_srx, 'cron', hour=14)
 
     schedule.start()

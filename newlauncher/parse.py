@@ -20,23 +20,26 @@ async def parse_new_launcher():
 
     for link in links:
         print(link)
-        r = requests.get(link, headers=Config.NEW_LAUNCHER_HEADERS)
-        soup = BeautifulSoup(r.text, "html.parser")
+        try:
+            r = requests.get(link, headers=Config.NEW_LAUNCHER_HEADERS)
+            soup = BeautifulSoup(r.text, "html.parser")
 
-        details = await gather_project_details(soup, link)
-        facilities = await gather_project_facilities(soup)
-        amenities, attachments = await gather_project_amenities(soup)
-        units = await gather_project_units(soup, details)
-        balances, overall = await gather_project_balances(soup)
-        plans = await gather_floor_plans(soup)
+            details = await gather_project_details(soup, link)
+            facilities = await gather_project_facilities(soup)
+            amenities, attachments = await gather_project_amenities(soup)
+            units = await gather_project_units(soup, details)
+            balances, overall = await gather_project_balances(soup)
+            plans = await gather_floor_plans(soup)
 
-        units_and_balances = await merge_units_and_balances(units, balances)
-        units_and_floor_plans = await merge_units_and_floor_plans(units_and_balances, plans)
+            units_and_balances = await merge_units_and_balances(units, balances)
+            units_and_floor_plans = await merge_units_and_floor_plans(units_and_balances, plans)
 
-        complete_response = await merge_gathered_data(details,
-                                                      facilities,
-                                                      attachments,
-                                                      overall)
+            complete_response = await merge_gathered_data(details,
+                                                          facilities,
+                                                          attachments,
+                                                          overall)
 
-        label = await store_data_airtable(complete_response, units_and_floor_plans, amenities)
-        await send_tg_report(complete_response, label)
+            label = store_data_airtable(complete_response, units_and_floor_plans, amenities)
+            await send_tg_report(complete_response, label)
+        except Exception:
+            continue

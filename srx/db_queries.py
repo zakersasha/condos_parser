@@ -5,6 +5,41 @@ import requests
 from config import Config
 
 
+def get_old_units_data(existing_data, units):
+    old_data = []
+    new_units = []
+    for item in existing_data:
+        response = requests.get(
+            f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{item}',
+            headers=Config.AIR_TABLE_HEADERS)
+        old_data.append(response.json()['fields'])
+
+    list_1_key_set = {(d['unit_type'], d['size_min']) for d in old_data}
+    for dict_2 in units:
+        if (dict_2['unit_type'], int(dict_2['size_min'])) not in list_1_key_set:
+            new_units.append(dict_2)
+
+
+    return new_units
+
+
+def get_old_amenities_data(existing_data, amenities):
+    old_data = []
+    new_amenities = []
+    for item in existing_data:
+        response = requests.get(
+            f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.AMENITIES_TABLE_ID}/{item}',
+            headers=Config.AIR_TABLE_HEADERS)
+        old_data.append(response.json()['fields'])
+
+    list_1_key_set = {d['amenities_name'] for d in old_data}
+    for dict_2 in amenities:
+        if dict_2['amenities_name'] not in list_1_key_set:
+            new_amenities.append(dict_2)
+
+    return new_amenities
+
+
 def store_data_airtable(main, units, amenities):
     records = get_all_records()
 
@@ -18,12 +53,17 @@ def store_data_airtable(main, units, amenities):
     if exists_data:
         label = 'Updated'
 
-        unit_ids = save_units_data(units)
-        amenity_ids = save_amenities_data(amenities)
+        # UNITS LOGIC
+        new_units = get_old_units_data(exists_data[1], units)
+        new_unit_ids = save_units_data(new_units)
+
+        # AMENITIES LOGIC
+        new_amenities = get_old_amenities_data(exists_data[2], amenities)
+        new_amenities_ids = save_amenities_data(new_amenities)
 
         url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-        main['amenities'] = amenity_ids
-        main['units'] = unit_ids
+        main['amenities'] = new_amenities_ids + exists_data[2]
+        main['units'] = new_unit_ids + exists_data[1]
 
         json_data = {
             'fields': main
@@ -31,9 +71,6 @@ def store_data_airtable(main, units, amenities):
 
         r = requests.put(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
-
-        delete_old_units(exists_data[1])
-        delete_old_amenities(exists_data[2])
 
         return label
 

@@ -5,8 +5,42 @@ import requests
 from config import Config
 
 
-async def store_data_airtable(main, units, amenities):
-    records = await get_all_records()
+def get_old_units_data(existing_data, units):
+    old_data = []
+    new_units = []
+    for item in existing_data:
+        response = requests.get(
+            f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{item}',
+            headers=Config.AIR_TABLE_HEADERS)
+        old_data.append(response.json()['fields'])
+
+    list_1_key_set = {(d['unit_type'], d['size_min']) for d in old_data}
+    for dict_2 in units:
+        if (dict_2['unit_type'], int(dict_2['size_min'])) not in list_1_key_set:
+            new_units.append(dict_2)
+
+    return new_units
+
+
+def get_old_amenities_data(existing_data, amenities):
+    old_data = []
+    new_amenities = []
+    for item in existing_data:
+        response = requests.get(
+            f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.AMENITIES_TABLE_ID}/{item}',
+            headers=Config.AIR_TABLE_HEADERS)
+        old_data.append(response.json()['fields'])
+
+    list_1_key_set = {d['amenities_name'] for d in old_data}
+    for dict_2 in amenities:
+        if dict_2['amenities_name'] not in list_1_key_set:
+            new_amenities.append(dict_2)
+
+    return new_amenities
+
+
+def store_data_airtable(main, units, amenities):
+    records = get_all_records()
 
     try:
         exists_data = next(
@@ -18,12 +52,17 @@ async def store_data_airtable(main, units, amenities):
     if exists_data:
         label = 'Updated'
 
-        unit_ids = await save_units_data(units)
-        amenity_ids = await save_amenities_data(amenities)
+        # UNITS LOGIC
+        new_units = get_old_units_data(exists_data[1], units)
+        new_unit_ids = save_units_data(new_units)
+
+        # AMENITIES LOGIC
+        new_amenities = get_old_amenities_data(exists_data[2], amenities)
+        new_amenities_ids = save_amenities_data(new_amenities)
 
         url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-        main['amenities'] = amenity_ids
-        main['units'] = unit_ids
+        main['amenities'] = new_amenities_ids + exists_data[2]
+        main['units'] = new_unit_ids + exists_data[1]
 
         json_data = {
             'fields': main
@@ -32,20 +71,17 @@ async def store_data_airtable(main, units, amenities):
         r = requests.put(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
 
-        await delete_old_units(exists_data[1])
-        await delete_old_amenities(exists_data[2])
-
         return label
 
     else:
         label = 'New'
-        unit_ids = await save_units_data(units)
-        amenity_ids = await save_amenities_data(amenities)
-        await save_main_data(main, unit_ids, amenity_ids)
+        unit_ids = save_units_data(units)
+        amenity_ids = save_amenities_data(amenities)
+        save_main_data(main, unit_ids, amenity_ids)
         return label
 
 
-async def delete_old_units(units_data):
+def delete_old_units(units_data):
     for unit in units_data:
         response = requests.delete(
             f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{unit}',
@@ -53,7 +89,7 @@ async def delete_old_units(units_data):
         print(f'Units deleted {response} {response.json()}')
 
 
-async def delete_old_amenities(amenities_data):
+def delete_old_amenities(amenities_data):
     for amenity in amenities_data:
         response = requests.delete(
             f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.AMENITIES_TABLE_ID}/{amenity}',
@@ -61,7 +97,9 @@ async def delete_old_amenities(amenities_data):
         print(f'Amenities deleted {response} {response.json()}')
 
 
-async def save_units_data(units):
+def save_units_data(units):
+    if len(units) == 0:
+        return []
     ids_data = []
 
     for unit in units:
@@ -70,14 +108,14 @@ async def save_units_data(units):
 
         url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}"
         r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
-        print(f'Saving units {r} {r.json()}')
+        print(f'Saving units {r}')
 
         ids_data.append(r.json()['id'])
 
     return ids_data
 
 
-async def save_amenities_data(amenities):
+def save_amenities_data(amenities):
     ids_data = []
 
     for amenity in amenities:
@@ -86,23 +124,26 @@ async def save_amenities_data(amenities):
 
         url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.AMENITIES_TABLE_ID}"
         r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
-        print(f'Saving amenities {r} {r.json()}')
+        print(f'Saving amenities {r}')
 
         ids_data.append(r.json()['id'])
 
     return ids_data
 
 
-async def save_main_data(main, unit_ids, amenity_ids):
+def save_main_data(main, unit_ids, amenity_ids):
     main['amenities'] = amenity_ids
-    main['units'] = unit_ids
+    if len(unit_ids) > 0:
+        main['units'] = unit_ids
+
     data_to_load = {'fields': main, "typecast": True}
     upload_json = json.dumps(data_to_load)
     url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}"
-    requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
+    r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
+    print(f'Saving main data {r}')
 
 
-async def get_all_records():
+def get_all_records():
     r = requests.get(f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}',
                      headers=Config.AIR_TABLE_HEADERS)
     return r.json()
