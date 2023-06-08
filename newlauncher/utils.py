@@ -22,9 +22,13 @@ async def get_detail_page_links():
 # PROJECT DETAILS
 async def gather_project_details(soup, url):
     details_data = {}
-    name = soup.find("h1").text.replace('[email protected]', 'LIV@MB')
-    details_data['name'] = name
     details_data['link_to_condo'] = url
+
+    name = soup.find("h1").text
+    if 'email' in name:
+        name = await handle_email_name(url)
+
+    details_data['name'] = name
 
     project_details = soup.find("div", {"id": "section-2"}).find_all("p")
 
@@ -45,7 +49,10 @@ async def gather_project_details(soup, url):
     gallery_links = []
     gallery = soup.find("div", {"id": "media-thumbnails-gallery"}).find_all("img")
     for image in gallery:
-        gallery_links.append({"url": image['src'].replace(' ', '%20')})
+        try:
+            gallery_links.append({"url": image['src'].replace(' ', '%20')})
+        except KeyError:
+            gallery_links.append({"url": image['data-cfsrc'].replace(' ', '%20')})
     details_data['images'] = gallery_links
 
     return details_data
@@ -319,3 +326,8 @@ async def str_to_datetime(date):
                                      .replace('rd', ''), '%d %B %Y')
 
     return res_date.strftime('%Y-%m-%d')
+
+
+async def handle_email_name(url):
+    name = url.split('/')[-1].replace('-', ' ')
+    return name

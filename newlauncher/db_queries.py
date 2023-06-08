@@ -8,6 +8,9 @@ from config import Config
 def get_old_units_data(existing_data, units):
     old_data = []
     new_units = []
+    if not existing_data:
+        return units
+
     for item in existing_data:
         response = requests.get(
             f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{item}',
@@ -25,6 +28,9 @@ def get_old_units_data(existing_data, units):
 def get_old_amenities_data(existing_data, amenities):
     old_data = []
     new_amenities = []
+    if not existing_data:
+        return amenities
+
     for item in existing_data:
         response = requests.get(
             f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.AMENITIES_TABLE_ID}/{item}',
@@ -42,12 +48,10 @@ def get_old_amenities_data(existing_data, amenities):
 def store_data_airtable(main, units, amenities):
     records = get_all_records()
 
-    try:
-        exists_data = next(
-            ([item["id"], item["fields"]['units'], item["fields"]['amenities']] for item in records['records'] if
-             item["fields"]['name'] == main['name']), None)
-    except KeyError:
-        exists_data = None
+    exists_data = next(
+        ([item["id"], item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')] for item in
+         records['records'] if
+         item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()), None)
 
     if exists_data:
         label = 'Updated'
@@ -61,14 +65,20 @@ def store_data_airtable(main, units, amenities):
         new_amenities_ids = save_amenities_data(new_amenities)
 
         url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-        main['amenities'] = new_amenities_ids + exists_data[2]
-        main['units'] = new_unit_ids + exists_data[1]
+        if not exists_data[2]:
+            main['amenities'] = new_amenities_ids
+        else:
+            main['amenities'] = new_amenities_ids + exists_data[2]
+        if not exists_data[1]:
+            main['units'] = new_unit_ids
+        else:
+            main['units'] = new_unit_ids + exists_data[1]
 
         json_data = {
             'fields': main
         }
 
-        r = requests.put(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
+        r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
 
         return label
