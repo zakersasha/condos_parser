@@ -64,6 +64,9 @@ def store_data_airtable(main, units, amenities):
         new_amenities = get_old_amenities_data(exists_data[2], amenities)
         new_amenities_ids = save_amenities_data(new_amenities)
 
+        if not new_unit_ids and not new_amenities_ids:
+            return None
+
         url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
         if not exists_data[2]:
             main['amenities'] = new_amenities_ids
