@@ -49,11 +49,12 @@ def store_data_airtable(main, units, amenities):
     records = get_all_records()
 
     exists_data = next(
-        ([item["id"], item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')] for item in
+        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')] for item
+         in
          records['records'] if
          item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()), None)
 
-    if exists_data:
+    if exists_data[0]:
         label = 'Updated'
 
         new_units = get_old_units_data(exists_data[1], units)
