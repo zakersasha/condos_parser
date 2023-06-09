@@ -56,16 +56,14 @@ def store_data_airtable(main, units, amenities):
     if exists_data:
         label = 'Updated'
 
-        # UNITS LOGIC
         new_units = get_old_units_data(exists_data[1], units)
-        new_unit_ids = save_units_data(new_units)
-
-        # AMENITIES LOGIC
         new_amenities = get_old_amenities_data(exists_data[2], amenities)
-        new_amenities_ids = save_amenities_data(new_amenities)
 
-        if not new_unit_ids and not new_amenities_ids:
+        if len(new_amenities) == 0 and len(new_units) == 0:
             return None
+
+        new_unit_ids = save_units_data(new_units)
+        new_amenities_ids = save_amenities_data(new_amenities)
 
         url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
         if not exists_data[2]:
