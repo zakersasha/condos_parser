@@ -214,11 +214,11 @@ async def gather_list_for_sale_data(soup, main_data):
         if psf_min and price_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "psf_min": float(psf_min), "size_min": int(min_size),
-                 "price_min": float(round(int(price_min) / 100000, 1)), "district": main_data["district"]})
+                 "price_min": float(round(int(price_min) / 1000000, 1)), "district": main_data["district"]})
         elif not psf_min and price_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "size_min": int(min_size), "district": main_data["district"],
-                 "price_min": float(round(int(price_min) / 100000, 1)), })
+                 "price_min": float(round(int(price_min) / 1000000, 1)), })
         elif not price_min and psf_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "psf_min": float(psf_min), "size_min": int(min_size),
