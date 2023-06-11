@@ -122,7 +122,7 @@ async def gather_units_table_data(soup, main_data):
 
                     details_data['district'] = main_data['district']
                     if 'View' not in price_min:
-                        details_data['price_min'] = float(round(int(price_min) / 100000, 1))
+                        details_data['price_min'] = float(round(int(price_min) / 1000000, 1))
                     details_data['unit_type'] = result_type
                     units_detail_data.append(details_data)
     except AttributeError:
@@ -296,14 +296,14 @@ async def gather_detail_for_sale_data(main_data):
                     if min_price and min_psf:
                         result_data.append(
                             {"unit_type": unit_type, "psf_min": int(min_psf), "size_min": int(min_size),
-                             "price_min": float(round(int(min_price) / 100000, 1)), "district": main_data["district"]})
+                             "price_min": float(round(int(min_price) / 1000000, 1)), "district": main_data["district"]})
                     elif not min_psf and not min_price:
                         result_data.append(
                             {"unit_type": unit_type, "size_min": int(min_size), "district": main_data["district"]})
                     elif not min_psf and min_price:
                         result_data.append(
                             {"unit_type": unit_type, "size_min": int(min_size),
-                             "price_min": float(round(int(min_price) / 100000, 1)),
+                             "price_min": float(round(int(min_price) / 1000000, 1)),
                              "district": main_data["district"]})
                     else:
                         result_data.append(
