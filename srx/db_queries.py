@@ -53,42 +53,41 @@ def store_data_airtable(main, units, amenities):
          in
          records['records'] if
          item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()), None)
+    try:
+        if exists_data[0]:
+            label = 'Updated'
 
-    if exists_data[0]:
-        label = 'Updated'
+            new_units = get_old_units_data(exists_data[1], units)
+            new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
-        new_units = get_old_units_data(exists_data[1], units)
-        new_amenities = get_old_amenities_data(exists_data[2], amenities)
+            if len(new_amenities) == 0 and len(new_units) == 0:
+                return None
 
-        if len(new_amenities) == 0 and len(new_units) == 0:
-            return None
+            new_unit_ids = save_units_data(new_units)
+            new_amenities_ids = save_amenities_data(new_amenities)
 
-        new_unit_ids = save_units_data(new_units)
-        new_amenities_ids = save_amenities_data(new_amenities)
+            if not new_unit_ids and not new_amenities_ids:
+                return None
 
-        if not new_unit_ids and not new_amenities_ids:
-            return None
+            url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
+            if not exists_data[2]:
+                main['amenities'] = new_amenities_ids
+            else:
+                main['amenities'] = new_amenities_ids + exists_data[2]
+            if not exists_data[1]:
+                main['units'] = new_unit_ids
+            else:
+                main['units'] = new_unit_ids + exists_data[1]
 
-        url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-        if not exists_data[2]:
-            main['amenities'] = new_amenities_ids
-        else:
-            main['amenities'] = new_amenities_ids + exists_data[2]
-        if not exists_data[1]:
-            main['units'] = new_unit_ids
-        else:
-            main['units'] = new_unit_ids + exists_data[1]
+            json_data = {
+                'fields': main
+            }
 
-        json_data = {
-            'fields': main
-        }
+            r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
+            print(f'Data updated {r} {r.json()}')
 
-        r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
-        print(f'Data updated {r} {r.json()}')
-
-        return label
-
-    else:
+            return label
+    except TypeError:
         label = 'New'
         unit_ids = save_units_data(units)
         amenity_ids = save_amenities_data(amenities)
