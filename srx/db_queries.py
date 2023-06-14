@@ -50,9 +50,8 @@ def store_data_airtable(main, units, amenities):
 
     exists_data = next(
         ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')] for item
-         in
-         records['records'] if
-         item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()), None)
+         in records if item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
+        None)
     try:
         record_id = exists_data[0]
     except TypeError:
@@ -160,6 +159,25 @@ def save_main_data(main, unit_ids, amenity_ids):
 
 
 def get_all_records():
-    r = requests.get(f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}',
-                     headers=Config.AIR_TABLE_HEADERS)
-    return r.json()
+    all_records = []
+
+    params = {
+        'pageSize': 100,
+    }
+
+    while True:
+        response = requests.get(f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}',
+                                headers=Config.AIR_TABLE_HEADERS, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            records = data['records']
+            all_records.extend(records)
+
+            if 'offset' in data:
+                params['offset'] = data['offset']
+            else:
+                break
+        else:
+            print(f"Failed to retrieve records (status code: {response.status_code}): {response.text}")
+            break
+    return all_records
