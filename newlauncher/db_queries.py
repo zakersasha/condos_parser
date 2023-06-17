@@ -90,7 +90,7 @@ def store_data_airtable(main, units, amenities):
         r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
 
-        return label, new_units
+        return label, new_units, len(main['units'])
 
 
 def delete_old_units(units_data):
