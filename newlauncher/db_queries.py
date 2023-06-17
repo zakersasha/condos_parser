@@ -59,7 +59,7 @@ def store_data_airtable(main, units, amenities):
         unit_ids = save_units_data(units)
         amenity_ids = save_amenities_data(amenities)
         save_main_data(main, unit_ids, amenity_ids)
-        return label
+        return label, None
 
     if record_id:
         label = 'Updated'
@@ -68,7 +68,7 @@ def store_data_airtable(main, units, amenities):
         new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
         if len(new_amenities) == 0 and len(new_units) == 0:
-            return None
+            return None, None
 
         new_unit_ids = save_units_data(new_units)
         new_amenities_ids = save_amenities_data(new_amenities)
@@ -90,7 +90,7 @@ def store_data_airtable(main, units, amenities):
         r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
 
-        return label
+        return label, new_units
 
 
 def delete_old_units(units_data):

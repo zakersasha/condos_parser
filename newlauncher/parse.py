@@ -39,7 +39,7 @@ async def parse_new_launcher():
                                                           attachments,
                                                           overall)
 
-            label = store_data_airtable(complete_response, units_and_floor_plans, amenities)
-            await send_tg_report(complete_response, label)
+            label, new_units = store_data_airtable(complete_response, units_and_floor_plans, amenities)
+            await send_tg_report(complete_response, label, new_units)
         except Exception:
             continue
