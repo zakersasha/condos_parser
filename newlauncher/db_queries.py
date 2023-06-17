@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import requests
@@ -49,8 +50,9 @@ def store_data_airtable(main, units, amenities):
     records = get_all_records()
 
     exists_data = next(
-        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')] for item
-         in records if item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
+        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')], item for
+         item in records if
+         item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
         None)
     try:
         record_id = exists_data[0]
@@ -89,8 +91,23 @@ def store_data_airtable(main, units, amenities):
 
         r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
         print(f'Data updated {r} {r.json()}')
+        save_updated_to_file(exists_data[3], main)
 
         return label, new_units, len(main['units'])
+
+
+def save_updated_to_file(old_data, new_data):
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    filename = f"NewLauncher_{current_date}.txt"
+
+    difference = {key: new_data[key] for key in new_data if new_data[key] != old_data.get(key)}
+
+    with open(filename, "a") as file:
+        diff = ''
+        diff += f"\n{old_data['name']}"
+        for key, value in difference.items():
+            diff += f"\n {key}: {value}\n"
+        file.write(diff)
 
 
 def delete_old_units(units_data):

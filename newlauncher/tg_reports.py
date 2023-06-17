@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 
 import requests
 
@@ -29,3 +30,19 @@ async def send_tg_report(data, label, new_units, total_units):
 
         requests.post(url_text, params=params)
         await asyncio.sleep(2)
+
+
+async def send_updates_file():
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    filename = f"NewLauncher_{current_date}.txt"
+    bot_token = Config.TG_BOT_TOKEN
+    url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
+    params = {
+        "chat_id": Config.TG_CHAT_ID
+    }
+
+    files = {
+        "document": open(filename, "rb")
+    }
+
+    requests.post(url, params=params, files=files)

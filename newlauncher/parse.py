@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 from config import Config
 from newlauncher.db_queries import store_data_airtable
-from newlauncher.tg_reports import send_tg_report
+from newlauncher.tg_reports import send_tg_report, send_updates_file
 from newlauncher.utils import (get_detail_page_links,
                                gather_project_details,
                                gather_project_facilities,
@@ -43,3 +43,4 @@ async def parse_new_launcher():
             await send_tg_report(complete_response, label, new_units, total_units)
         except Exception:
             continue
+    await send_updates_file()

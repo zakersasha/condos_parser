@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 from config import Config
 from srx.db_queries import store_data_airtable
-from srx.tg_reports import send_tg_report
+from srx.tg_reports import send_tg_report, send_updates_file
 from srx.utils import (get_last_page_number,
                        gather_projects_links,
                        gather_main_table_data,
@@ -35,3 +35,4 @@ async def parse_srx():
             await send_tg_report(main_data, label, new_units, total_units)
         except Exception:
             continue
+    await send_updates_file()
