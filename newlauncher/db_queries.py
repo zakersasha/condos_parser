@@ -104,15 +104,11 @@ def save_updated_to_file(old_data, new_data):
     with open(filename, "a") as file:
         diff = ''
         diff += f"\n\n{old_data.get('name')}\n"
-        for key in old_data:
-            if key in new_data:
+        for key in new_data:
+            if key in old_data:
                 if old_data[key] != new_data[key]:
                     diff += f"Key: {key}, Old Value: {old_data[key]}, New Value: {new_data[key]}\n"
             else:
-                diff += f"Key: {key}, Old Value: {old_data[key]}, New Value: None\n"
-
-        for key in new_data:
-            if key not in old_data:
                 diff += f"Key: {key}, Old Value: None, New Value: {new_data[key]}\n"
 
         file.write(diff)
