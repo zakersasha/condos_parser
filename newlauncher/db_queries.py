@@ -50,7 +50,8 @@ def store_data_airtable(main, units, amenities):
     records = get_all_records()
 
     exists_data = next(
-        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities')], item for
+        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities'),
+          item.get("fields", {})] for
          item in records if
          item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
         None)
@@ -61,7 +62,7 @@ def store_data_airtable(main, units, amenities):
         unit_ids = save_units_data(units)
         amenity_ids = save_amenities_data(amenities)
         save_main_data(main, unit_ids, amenity_ids)
-        return label, None
+        return label, None, None
 
     if record_id:
         label = 'Updated'
@@ -70,7 +71,7 @@ def store_data_airtable(main, units, amenities):
         new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
         if len(new_amenities) == 0 and len(new_units) == 0:
-            return None, None
+            return None, None, None
 
         new_unit_ids = save_units_data(new_units)
         new_amenities_ids = save_amenities_data(new_amenities)
@@ -100,13 +101,20 @@ def save_updated_to_file(old_data, new_data):
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
     filename = f"NewLauncher_{current_date}.txt"
 
-    difference = {key: new_data[key] for key in new_data if new_data[key] != old_data.get(key)}
-
     with open(filename, "a") as file:
         diff = ''
-        diff += f"\n{old_data['name']}"
-        for key, value in difference.items():
-            diff += f"\n {key}: {value}\n"
+        diff += f"\n\n{old_data.get('name')}\n"
+        for key in old_data:
+            if key in new_data:
+                if old_data[key] != new_data[key]:
+                    diff += f"Key: {key}, Old Value: {old_data[key]}, New Value: {new_data[key]}\n"
+            else:
+                diff += f"Key: {key}, Old Value: {old_data[key]}, New Value: None\n"
+
+        for key in new_data:
+            if key not in old_data:
+                diff += f"Key: {key}, Old Value: None, New Value: {new_data[key]}\n"
+
         file.write(diff)
 
 

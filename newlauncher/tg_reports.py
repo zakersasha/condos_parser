@@ -21,7 +21,7 @@ async def send_tg_report(data, label, new_units, total_units):
             for item in new_units:
                 message_upd += f'{item["unit_type"]} '
             message += message_upd
-            message += f'\n Total units: {total_units}'
+            message += f'\nTotal units: {total_units}'
 
         bot_token = Config.TG_BOT_TOKEN
 
