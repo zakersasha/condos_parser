@@ -35,4 +35,7 @@ async def parse_srx():
             await send_tg_report(main_data, label, new_units, total_units)
         except Exception:
             continue
-    await send_updates_file()
+    try:
+        await send_updates_file()
+    except Exception:
+        pass
