@@ -34,7 +34,7 @@ async def gather_main_table_data(url, soup):
     try:
         sold_units = soup.find("div", {"id": "total-units-bar-sold"}).text.split('%')[0]
     except AttributeError:
-        sold_units = None
+        sold_units = 0
 
     name = soup.find("h1").text
     if 'email' in name:
@@ -58,6 +58,8 @@ async def gather_main_table_data(url, soup):
                   "units_number": int(units_number)}
         if sold_units:
             result["sold_units (in % )"] = int(sold_units)
+        else:
+            result["sold_units (in % )"] = 0
         return result
 
     elif len(about_data) == 10:
@@ -71,6 +73,8 @@ async def gather_main_table_data(url, soup):
                   "developer": developer, "tenure": tenure, "units_number": int(units_number), "images": images}
         if sold_units:
             result["sold_units (in % )"] = int(sold_units)
+        else:
+            result["sold_units (in % )"] = 0
 
         return result
 
@@ -83,6 +87,8 @@ async def gather_main_table_data(url, soup):
                   "developer": developer, "tenure": tenure, "images": images}
         if sold_units:
             result["sold_units (in % )"] = int(sold_units)
+        else:
+            result["sold_units (in % )"] = 0
         return result
 
 
@@ -123,6 +129,8 @@ async def gather_units_table_data(soup, main_data):
                     details_data['district'] = main_data['district']
                     if 'View' not in price_min:
                         details_data['price_min'] = float(round(int(price_min) / 1000000, 1))
+                    if not result_type:
+                        details_data['unit_type'] = 'undetected'
                     details_data['unit_type'] = result_type
                     units_detail_data.append(details_data)
     except AttributeError:
@@ -194,9 +202,14 @@ async def gather_list_for_sale_data(soup, main_data):
             unit_type = listing.find("div", {"class": "listing-room-no"}).text.replace('\t', '').replace('\n',
                                                                                                          '') + 'bedroom'
         except AttributeError:
-            unit_type = None
+            unit_type = 'undetected'
         price_min = listing.find("div", {"class": "listing-price"}).text.replace('\t', '').replace('\n', '').replace(
             ' ', '').replace('$', '').replace(',', '')
+
+        try:
+            unit_link = 'https://www.srx.com.sg' + listing.find('a', class_='project-details-top-listing')['href']
+        except Exception:
+            unit_link = 'no link'
 
         if price_min == 'Viewtooffer':
             price_min = None
@@ -214,15 +227,16 @@ async def gather_list_for_sale_data(soup, main_data):
         if psf_min and price_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "psf_min": float(psf_min), "size_min": int(min_size),
-                 "price_min": float(round(int(price_min) / 1000000, 1)), "district": main_data["district"]})
+                 "price_min": float(round(int(price_min) / 1000000, 1)), "district": main_data["district"],
+                 'unit_link': unit_link})
         elif not psf_min and price_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "size_min": int(min_size), "district": main_data["district"],
-                 "price_min": float(round(int(price_min) / 1000000, 1)), })
+                 "price_min": float(round(int(price_min) / 1000000, 1)), 'unit_link': unit_link})
         elif not price_min and psf_min and unit_type:
             result_data.append(
                 {"unit_type": unit_type, "psf_min": float(psf_min), "size_min": int(min_size),
-                 "district": main_data["district"]})
+                 "district": main_data["district"], 'unit_link': unit_link})
         else:
             continue
     complete_response = await remove_duplicate_units(result_data)
@@ -266,6 +280,11 @@ async def gather_detail_for_sale_data(main_data):
         sales_listing = soup.find_all("div", {"class": "listingContainer"})
 
         for listing in sales_listing:
+            try:
+                unit_link = 'https://www.srx.com.sg' + listing.find('a', class_='listingDetailsDivLink')['href']
+            except Exception:
+                unit_link = 'no link'
+
             if listing.find("span", {"class": "notranslate"}).text == main_data["name"]:
                 try:
                     unit_type = listing.find("div", {"class": "listingDetailRoomNo"}).text.replace('\t', '').replace(
@@ -296,19 +315,21 @@ async def gather_detail_for_sale_data(main_data):
                     if min_price and min_psf:
                         result_data.append(
                             {"unit_type": unit_type, "psf_min": int(min_psf), "size_min": int(min_size),
-                             "price_min": float(round(int(min_price) / 1000000, 1)), "district": main_data["district"]})
+                             "price_min": float(round(int(min_price) / 1000000, 1)), "district": main_data["district"],
+                             'unit_link': unit_link})
                     elif not min_psf and not min_price:
                         result_data.append(
-                            {"unit_type": unit_type, "size_min": int(min_size), "district": main_data["district"]})
+                            {"unit_type": unit_type, "size_min": int(min_size), "district": main_data["district"],
+                             'unit_link': unit_link})
                     elif not min_psf and min_price:
                         result_data.append(
                             {"unit_type": unit_type, "size_min": int(min_size),
                              "price_min": float(round(int(min_price) / 1000000, 1)),
-                             "district": main_data["district"]})
+                             "district": main_data["district"], 'unit_link': unit_link})
                     else:
                         result_data.append(
                             {"unit_type": unit_type, "size_min": int(min_size), "psf_min": int(min_psf),
-                             "district": main_data["district"]})
+                             "district": main_data["district"], 'unit_link': unit_link})
                 except ValueError:
                     pass
         else:

@@ -6,9 +6,9 @@ import requests
 from config import Config
 
 
-async def send_tg_report(data, label, new_units, total_units):
-    if label:
-        message = f'✅ {data["name"]} *{label}\n\n' \
+async def send_tg_report(data, label, new_units, total_units, old_available_units):
+    if label == 'New':
+        message = f'🆕 {data["name"]} *{label}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
                   f'🗓 Start date of previews: {data["previewing_start_date"]}\n\n' \
                   f'🏡 Condo: {data["link_to_condo"]}\n'
@@ -17,11 +17,36 @@ async def send_tg_report(data, label, new_units, total_units):
             message += f'📔 Brochure: {data["brochure"][0]["url"]}\n'
 
         if new_units:
+            new_unit_types = '\nNew units added: '
+            for item in new_units:
+                new_unit_types += f'{item["unit_type"]} '
+
+            message += new_unit_types
+
+        try:
+            if data['overall_available_units']:
+                message += f'\nAvailable units: {data["overall_available_units"]}'
+        except (KeyError, AttributeError):
+            pass
+
+        if total_units:
+            message += f'\nTotal units: {total_units}'
+
+    if label == 'Updated':
+        message = f'✅ {data["name"]}\n\n' \
+                  f'👉 District: {data["district"]} {data["address"]}\n' \
+                  f'🏡 Condo: {data["link_to_condo"]}\n\n'
+        if new_units:
             message_upd = 'New units added: '
             for item in new_units:
                 message_upd += f'{item["unit_type"]} '
             message += message_upd
-            message += f'\nTotal units: {total_units}'
+
+        try:
+            if data['overall_available_units'] and data['overall_available_units'] != old_available_units:
+                message += f'Available units: {old_available_units} → {data["overall_available_units"]}'
+        except (KeyError, AttributeError):
+            pass
 
         bot_token = Config.TG_BOT_TOKEN
 

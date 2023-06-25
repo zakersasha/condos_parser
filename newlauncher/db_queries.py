@@ -47,55 +47,62 @@ def get_old_amenities_data(existing_data, amenities):
 
 
 def store_data_airtable(main, units, amenities):
-    records = get_all_records()
+    if units or len(units) > 0:
+        records = get_all_records()
 
-    exists_data = next(
-        ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities'),
-          item.get("fields", {})] for
-         item in records if
-         item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
-        None)
-    try:
-        record_id = exists_data[0]
-    except TypeError:
-        label = 'New'
-        unit_ids = save_units_data(units)
-        amenity_ids = save_amenities_data(amenities)
-        save_main_data(main, unit_ids, amenity_ids)
-        return label, None, None
+        exists_data = next(
+            ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities'),
+              item.get("fields", {})] for
+             item in records if
+             item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
+            None)
+        try:
+            record_id = exists_data[0]
+        except TypeError:
+            label = 'New'
+            unit_ids = save_units_data(units)
+            amenity_ids = save_amenities_data(amenities)
+            save_main_data(main, unit_ids, amenity_ids)
+            return label, None, None, None
 
-    if record_id:
-        label = 'Updated'
+        if record_id:
+            label = 'Updated'
 
-        new_units = get_old_units_data(exists_data[1], units)
-        new_amenities = get_old_amenities_data(exists_data[2], amenities)
+            new_units = get_old_units_data(exists_data[1], units)
+            new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
-        if len(new_amenities) == 0 and len(new_units) == 0:
-            return None, None, None
+            if len(new_amenities) == 0 and len(new_units) == 0:
+                return None, None, None, None
 
-        new_unit_ids = save_units_data(new_units)
-        new_amenities_ids = save_amenities_data(new_amenities)
+            new_unit_ids = save_units_data(new_units)
+            new_amenities_ids = save_amenities_data(new_amenities)
 
-        url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-        if not exists_data[2]:
-            main['amenities'] = new_amenities_ids
-        else:
-            main['amenities'] = new_amenities_ids + exists_data[2]
-        if not exists_data[1]:
-            main['units'] = new_unit_ids
-        else:
-            main['units'] = new_unit_ids + exists_data[1]
+            url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
+            if not exists_data[2]:
+                main['amenities'] = new_amenities_ids
+            else:
+                main['amenities'] = new_amenities_ids + exists_data[2]
+            if not exists_data[1]:
+                main['units'] = new_unit_ids
+            else:
+                main['units'] = new_unit_ids + exists_data[1]
 
-        json_data = {
-            'fields': main
-        }
+            json_data = {
+                'fields': main
+            }
 
-        r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
-        print(f'Data updated {r} {r.json()}')
-        save_updated_to_file(exists_data[3], main)
+            try:
+                old_available_units = exists_data[3]["overall_available_units"]
+            except (AttributeError, KeyError):
+                old_available_units = None
 
-        return label, new_units, len(main['units'])
+            r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
+            print(f'Data updated {r} {r.json()}')
+            save_updated_to_file(exists_data[3], main)
 
+            return label, new_units, main['units_number'], old_available_units
+    else:
+        return None, None, None, None
 
 def save_updated_to_file(old_data, new_data):
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")

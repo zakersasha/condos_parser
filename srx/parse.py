@@ -31,8 +31,8 @@ async def parse_srx():
             units = await combine_units_data(units_data, list_for_sale_data, detail_for_sale_data)
 
             amenities_data = await gather_amenities_table_data(soup)
-            label, new_units, total_units = store_data_airtable(main_data, units, amenities_data)
-            await send_tg_report(main_data, label, new_units, total_units)
+            label, new_units, total_units, old_available_units = store_data_airtable(main_data, units, amenities_data)
+            await send_tg_report(main_data, label, new_units, total_units, old_available_units)
         except Exception:
             continue
     try:
