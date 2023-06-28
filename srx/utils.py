@@ -253,7 +253,8 @@ async def combine_units_data(units_data, list_for_sale_data, detail_for_sale_dat
 
 
 async def delete_untyped_units(data):
-    filtered_data = [item for item in data if item.get('unit_type') is not None]
+    filtered_data = [item for item in data if
+                     item.get('unit_type', None) is not None or item.get('unit_type') != 'undetected']
     return filtered_data
 
 
