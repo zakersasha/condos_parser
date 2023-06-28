@@ -246,9 +246,15 @@ async def gather_list_for_sale_data(soup, main_data):
 async def combine_units_data(units_data, list_for_sale_data, detail_for_sale_data):
     data = units_data + list_for_sale_data + detail_for_sale_data
     units = [dict(t) for t in {tuple(d.items()) for d in data}]
-    complete_response = await remove_duplicate_units(units)
+    response = await remove_duplicate_units(units)
+    complete_response = await delete_untyped_units(response)
 
     return complete_response
+
+
+async def delete_untyped_units(data):
+    filtered_data = [item for item in data if item.get('unit_type') is not None]
+    return filtered_data
 
 
 async def remove_duplicate_units(list_of_units):
