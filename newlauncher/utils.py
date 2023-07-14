@@ -63,7 +63,7 @@ async def gather_project_details_block(details_data, content, developers):
     details_data['district'] = content[1].split(' ')[0]
     details_data['previewing_start_date'] = await str_to_datetime(content[6])
     details_data['type'] = content[4]
-    details_data['date_of_completion'] = await str_to_datetime(content[7].replace(' or earlier', ''))
+    details_data['date_of_completion'] = await str_to_datetime(content[7])
     details_data['tenure'] = content[8].replace('99 YearsLeasehold ', '99 YearsLeasehold')
     details_data['units_number'] = int(content[5].split(' ')[0])
     details_data['units_size'] = content[5].split(' ')[3]
@@ -295,7 +295,9 @@ async def merge_units_and_floor_plans(units, plans):
 
 async def str_to_datetime(date):
     try:
-        res_date = datetime.strptime(date.replace('th', '').replace('Nov', 'November') \
+        date = date.replace(' or earlier', '')
+        clean_date = ' '.join(date.split())
+        res_date = datetime.strptime(clean_date.replace('th', '').replace('Nov', 'November') \
                                      .replace('Dec', 'December') \
                                      .replace('Jan', 'January') \
                                      .replace('Feb', 'February') \
@@ -309,8 +311,11 @@ async def str_to_datetime(date):
                                      .replace('1st', '1') \
                                      .replace('nd', '') \
                                      .replace('rd', ''), '%d %B %Y')
+        return res_date.strftime('%Y-%m-%d')
     except ValueError:
-        res_date = datetime.strptime(date[:-1].replace('th', '').replace('Nov', 'November') \
+        date = date[:-1].replace(' or earlier', '')
+        clean_date = ' '.join(date.split())
+        res_date = datetime.strptime(clean_date.replace('th', '').replace('Nov', 'November') \
                                      .replace('Dec', 'December') \
                                      .replace('Jan', 'January') \
                                      .replace('Feb', 'February') \
@@ -325,7 +330,7 @@ async def str_to_datetime(date):
                                      .replace('nd', '') \
                                      .replace('rd', ''), '%d %B %Y')
 
-    return res_date.strftime('%Y-%m-%d')
+        return res_date.strftime('%Y-%m-%d')
 
 
 async def handle_email_name(url):
