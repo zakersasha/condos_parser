@@ -11,7 +11,7 @@ if __name__ == '__main__':
     # New launcher
     schedule.add_job(parse_new_launcher, 'cron', hour=12)
     # Srx
-    schedule.add_job(parse_srx, 'cron', hour=16, minute=14)
+    # schedule.add_job(parse_srx, 'cron', hour=16, minute=14)
 
     schedule.start()
 
