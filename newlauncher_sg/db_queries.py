@@ -9,6 +9,7 @@ from config import Config
 def get_old_units_data(existing_data, units):
     old_data = []
     new_units = []
+    upd_data = []
     if not existing_data:
         return units
 
@@ -16,25 +17,58 @@ def get_old_units_data(existing_data, units):
         response = requests.get(
             f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{item}',
             headers=Config.AIR_TABLE_HEADERS)
+        upd_data.append(response.json())
         old_data.append(response.json()['fields'])
 
-    print(old_data)
-    print('*' * 20)
-    print(units)
-    # if exist update old dict with new
-    # available_units = 0 if old unit_type & size not in new
-    update_units_data(old_data, units)
+    changes = update_units_data(upd_data, units)
 
     list_1_key_set = {(d['unit_type'], d['size_min']) for d in old_data}
     for dict_2 in units:
         if (dict_2['unit_type'], int(dict_2['size_min'])) not in list_1_key_set:
             new_units.append(dict_2)
 
-    return new_units
+    return new_units, changes
 
 
 def update_units_data(old_data, new_data):
-    pass
+    # Обновление юнитов
+    changes = []
+    for unit in new_data:
+        found_data = next((data for data in old_data if
+                           data['fields']['unit_type'] == unit['unit_type'] and data['fields']['size_min'] == unit[
+                               'size_min']), None)
+
+        if found_data:
+            if unit != found_data['fields']:
+                record_id = found_data['id']
+                url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{record_id}'
+                requests.patch(url, headers=Config.AIR_TABLE_HEADERS, data=json.dumps({'fields': unit}))
+
+                if unit.get('price_min', None) != found_data.get("fields", {}).get('price_min', None):
+                    changes.append(
+                        f"{unit['unit_type']} price: {found_data.get('fields', {}).get('price_min', None)} → {unit['price_min']} ")
+                if unit['available_units'] != found_data['fields']['available_units']:
+                    changes.append(
+                        f"{unit['unit_type']} available units: {found_data['fields']['available_units']} → {unit['available_units']} ")
+
+    # update units availability
+    for old_unit in old_data:
+        found = next((data for data in new_data if
+                      data['unit_type'] == old_unit['fields']['unit_type'] and data['size_min'] ==
+                      old_unit['fields']['size_min']), None)
+        if not found:
+            print(old_unit)
+            record_id = old_unit['id']
+            old_unit['fields']['all_units'] = 0.0
+            old_unit['fields']['available_units'] = 0.0
+            del old_unit['fields']['Book Preview Button']
+
+            url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{record_id}'
+            requests.patch(url, headers=Config.AIR_TABLE_HEADERS,
+                           data=json.dumps({'fields': old_unit['fields']}))
+            changes.append(
+                f"{old_unit['fields']['unit_type']} available units → 0")
+    return changes
 
 
 def get_old_amenities_data(existing_data, amenities):
@@ -60,7 +94,6 @@ def get_old_amenities_data(existing_data, amenities):
 def store_data_airtable(main, units, amenities):
     if units or len(units) > 0:
         records = get_all_records()
-        print(f'rec {main}')
 
         exists_data = next(
             ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities'),
@@ -75,16 +108,16 @@ def store_data_airtable(main, units, amenities):
             unit_ids = save_units_data(units)
             amenity_ids = save_amenities_data(amenities)
             save_main_data(main, unit_ids, amenity_ids)
-            return label, None, None
+            return label, None, None, None
 
         if record_id:
             label = 'Updated'
 
-            new_units = get_old_units_data(exists_data[1], units)
+            new_units, changes = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
             if len(new_amenities) == 0 and len(new_units) == 0:
-                return None, None, None
+                return None, None, None, None
 
             new_unit_ids = save_units_data(new_units)
             new_amenities_ids = save_amenities_data(new_amenities)
@@ -107,14 +140,14 @@ def store_data_airtable(main, units, amenities):
             print(f'Data updated {r} {r.json()}')
             save_updated_to_file(exists_data[3], main)
 
-            return label, new_units, main['units_number']
+            return label, new_units, main['units_number'], changes
     else:
-        return None, None, None
+        return None, None, None, None
 
 
 def save_updated_to_file(old_data, new_data):
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    filename = f"NewLauncher_{current_date}.txt"
+    filename = f"NewLauncher_sg_{current_date}.txt"
 
     with open(filename, "a") as file:
         diff = ''
@@ -188,7 +221,7 @@ def save_main_data(main, unit_ids, amenity_ids):
     upload_json = json.dumps(data_to_load)
     url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}"
     r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
-    print(f'Saving main data {r}')
+    print(f'Saving main data {r.json()}')
 
 
 def get_all_records():

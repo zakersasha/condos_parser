@@ -6,7 +6,7 @@ import requests
 from config import Config
 
 
-async def send_tg_report(data, label, new_units, total_units):
+async def send_tg_report(data, label, new_units, total_units, units_changes):
     if label == 'New':
         message = f'🆕 {data["name"]} *{label}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
@@ -31,6 +31,10 @@ async def send_tg_report(data, label, new_units, total_units):
             for item in new_units:
                 message_upd += f'{item["unit_type"]} '
             message += message_upd
+            message += '\n'
+        if len(units_changes) > 0:
+            for row in units_changes:
+                message += f'{row}\n'
 
         bot_token = Config.TG_BOT_TOKEN
 

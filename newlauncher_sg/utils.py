@@ -50,8 +50,8 @@ def extract_main_data(soup, data):
     images_data = soup.find('div', {"id": "project_photos_scroll"}).find_all('img')
     for image in images_data:
         image_src = image['data-src']
-        images.append({"url": image_src})
-    result_data['images'] = images
+        images.append(image_src)
+    result_data['images_urls'] = images
 
     # Extract Floor plans
     try:
@@ -61,8 +61,8 @@ def extract_main_data(soup, data):
             'a')
         for plan in floor_plans_data:
             plan_href = plan['href']
-            floor_plans.append({"url": plan_href})
-        result_data['floor_plans_attached'] = floor_plans
+            floor_plans.append(plan_href)
+        result_data['floor_plans_urls'] = floor_plans
     except AttributeError:
         pass
 
@@ -71,8 +71,8 @@ def extract_main_data(soup, data):
         site_plans = []
         site_plans_data = soup.find('div', class_='image_hover_overlay_container text-center shadow-lg').find('a')[
             'href']
-        site_plans.append({"url": site_plans_data})
-        result_data['site_plans_attachments'] = site_plans
+        site_plans.append(site_plans_data)
+        result_data['site_plans_urls'] = site_plans
     except AttributeError:
         pass
 
