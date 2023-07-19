@@ -1,12 +1,13 @@
 import asyncio
 import datetime
+import time
 
 import requests
 
 from config import Config
 
 
-async def send_tg_report(data, label, new_units, total_units, units_changes):
+def send_tg_report(data, label, new_units, total_units, units_changes):
     if label == 'New':
         message = f'🆕 {data["name"]} *{label}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
@@ -42,10 +43,10 @@ async def send_tg_report(data, label, new_units, total_units, units_changes):
         params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
 
         requests.post(url_text, params=params)
-        await asyncio.sleep(2)
+        time.sleep(2)
 
 
-async def send_updates_file():
+def send_updates_file():
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
     filename = f"NewLauncher_sg_{current_date}.txt"
     bot_token = Config.TG_BOT_TOKEN
