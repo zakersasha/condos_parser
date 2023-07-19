@@ -10,17 +10,21 @@ async def parse_new_launcher_sg():
 
     for link in links:
         print(link)
-        main_table_data, soup = gather_main_data(link)  # Все данные со страницы
-        main = extract_main_data(soup, main_table_data)  # Данные основной таблицы
-        amenities_table_data = gather_amenities_data(soup)  # Данные таблицы amenities
-        units_table_data = gather_units_data(soup)  # Данные таблицы units
-        if units_table_data == 'skip':
+        try:
+            main_table_data, soup = gather_main_data(link)  # Все данные со страницы
+            main = extract_main_data(soup, main_table_data)  # Данные основной таблицы
+            amenities_table_data = gather_amenities_data(soup)  # Данные таблицы amenities
+            units_table_data = gather_units_data(soup)  # Данные таблицы units
+            if units_table_data == 'skip':
+                continue
+
+            label, new_units, total_units, units_changes = store_data_airtable(main, units_table_data,
+                                                                               amenities_table_data)
+
+            send_tg_report(main, label, new_units, total_units, units_changes)
+        except Exception:
             continue
-
-        label, new_units, total_units, units_changes = store_data_airtable(main, units_table_data,
-                                                                           amenities_table_data)
-
-        send_tg_report(main, label, new_units, total_units, units_changes)
-
-
-    send_updates_file()
+    try:
+        send_updates_file()
+    except Exception:
+        pass
