@@ -171,13 +171,10 @@ def gather_units_data(soup):
 
         unit_psf = unit_data[3].get_text(strip=True)
         if 'to be released' in unit_psf:
-            psf_min = None
-            psf_max = None
+            psf_avg = None
         else:
-            psf_min = round(float(unit_psf.split('$')[1].replace('psf', '').replace(',', '.')), 2)
-            psf_max = None
-        unit_detail['psf_min'] = psf_min
-        unit_detail['psf_max'] = psf_max
+            psf_avg = round(float(unit_psf.split('$')[1].replace('psf', '').replace(',', '.')), 2)
+        unit_detail['psf_avg'] = psf_avg
 
         unit_availability_data = unit_data[4].get_text(strip=True)
         if 'to be released' in unit_availability_data:

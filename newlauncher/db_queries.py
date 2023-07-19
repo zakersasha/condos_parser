@@ -54,7 +54,7 @@ def store_data_airtable(main, units, amenities):
             ([item.get("id", None), item.get("fields", {}).get('units'), item.get("fields", {}).get('amenities'),
               item.get("fields", {})] for
              item in records if
-             item["fields"]['name'].replace(' @ ', ' ').lower() == main['name'].replace(' @ ', ' ').lower()),
+             main['name'].replace(' @ ', ' ').lower() in item["fields"]['name'].replace(' @ ', ' ').lower()),
             None)
         try:
             record_id = exists_data[0]
@@ -103,6 +103,7 @@ def store_data_airtable(main, units, amenities):
             return label, new_units, main['units_number'], old_available_units
     else:
         return None, None, None, None
+
 
 def save_updated_to_file(old_data, new_data):
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
