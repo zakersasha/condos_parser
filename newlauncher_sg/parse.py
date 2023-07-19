@@ -6,7 +6,7 @@ from newlauncher_sg.utils import gather_projects_links, gather_main_data, extrac
 
 async def parse_new_launcher_sg():
     """Parse, handle & save new launcher data."""
-    links = ['https://www.newlaunches.sg/condominium/mattar-residences.html']  # Добыча ссылок на кондо
+    links = gather_projects_links()  # Добыча ссылок на кондо
 
     for link in links:
         print(link)
