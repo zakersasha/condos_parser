@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import time
 
@@ -8,6 +7,9 @@ from config import Config
 
 
 def send_tg_report(data, label, new_units, total_units, units_changes):
+    bot_token = Config.TG_BOT_TOKEN
+    url_text = f'{Config.TG_API_URL}{bot_token}/sendMessage'
+
     if label == 'New':
         message = f'🆕 {data["name"]} *{label}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
@@ -22,6 +24,10 @@ def send_tg_report(data, label, new_units, total_units, units_changes):
 
         if total_units:
             message += f'\nTotal units: {total_units}'
+        params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
+
+        requests.post(url_text, params=params)
+        time.sleep(2)
 
     if label == 'Updated':
         message = f'✅ {data["name"]}\n\n' \
@@ -37,9 +43,6 @@ def send_tg_report(data, label, new_units, total_units, units_changes):
             for row in units_changes:
                 message += f'{row}\n'
 
-        bot_token = Config.TG_BOT_TOKEN
-
-        url_text = f'{Config.TG_API_URL}{bot_token}/sendMessage'
         params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
 
         requests.post(url_text, params=params)

@@ -7,6 +7,9 @@ from config import Config
 
 
 async def send_tg_report(data, label, new_units, total_units, old_available_units):
+    bot_token = Config.TG_BOT_TOKEN
+    url_text = f'{Config.TG_API_URL}{bot_token}/sendMessage'
+
     if label == 'New':
         message = f'🆕 {data["name"]} *{label}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
@@ -32,6 +35,11 @@ async def send_tg_report(data, label, new_units, total_units, old_available_unit
         if total_units:
             message += f'\nTotal units: {total_units}'
 
+        params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
+
+        requests.post(url_text, params=params)
+        await asyncio.sleep(2)
+
     if label == 'Updated':
         message = f'✅ {data["name"]}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
@@ -48,9 +56,6 @@ async def send_tg_report(data, label, new_units, total_units, old_available_unit
         except (KeyError, AttributeError):
             pass
 
-        bot_token = Config.TG_BOT_TOKEN
-
-        url_text = f'{Config.TG_API_URL}{bot_token}/sendMessage'
         params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
 
         requests.post(url_text, params=params)

@@ -42,7 +42,10 @@ def gather_main_data(link):
 
 def extract_main_data(soup, data):
     result_data = {}
-    result_data['name'] = data['Project Name:']
+    if 'Former' in data['Project Name:']:
+        result_data['name'] = data['Project Name:'].split('(')[0][:-1]
+    else:
+        result_data['name'] = data['Project Name:']
     result_data['link_to_condo'] = data['page_link']
 
     # Extract images
