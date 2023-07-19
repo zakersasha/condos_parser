@@ -116,21 +116,20 @@ def store_data_airtable(main, units, amenities):
             new_units, changes = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
-            if len(new_amenities) == 0 and len(new_units) == 0:
-                return None, None, None, None
-
-            new_unit_ids = save_units_data(new_units)
-            new_amenities_ids = save_amenities_data(new_amenities)
-
             url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-            if not exists_data[2]:
-                main['amenities'] = new_amenities_ids
-            else:
-                main['amenities'] = new_amenities_ids + exists_data[2]
-            if not exists_data[1]:
-                main['units'] = new_unit_ids
-            else:
-                main['units'] = new_unit_ids + exists_data[1]
+
+            if len(new_amenities) > 0 and len(new_units) > 0:
+                new_unit_ids = save_units_data(new_units)
+                new_amenities_ids = save_amenities_data(new_amenities)
+
+                if not exists_data[2]:
+                    main['amenities'] = new_amenities_ids
+                else:
+                    main['amenities'] = new_amenities_ids + exists_data[2]
+                if not exists_data[1]:
+                    main['units'] = new_unit_ids
+                else:
+                    main['units'] = new_unit_ids + exists_data[1]
 
             json_data = {
                 'fields': main

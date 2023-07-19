@@ -20,11 +20,11 @@ async def parse_new_launcher_sg():
 
             label, new_units, total_units, units_changes = store_data_airtable(main, units_table_data,
                                                                                amenities_table_data)
-
-            send_tg_report(main, label, new_units, total_units, units_changes)
+            break
+            # send_tg_report(main, label, new_units, total_units, units_changes)
         except Exception:
             continue
-    try:
-        send_updates_file()
-    except Exception:
-        pass
+    # try:
+    #     send_updates_file()
+    # except Exception:
+    #     pass

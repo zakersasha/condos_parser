@@ -11,7 +11,7 @@ def send_tg_report(data, label, new_units, total_units, units_changes):
     url_text = f'{Config.TG_API_URL}{bot_token}/sendMessage'
 
     if label == 'New':
-        message = f'🆕 {data["name"]} *{label}\n\n' \
+        message = f'🆕 {data["name"]}\n\n' \
                   f'👉 District: {data["district"]} {data["address"]}\n' \
                   f'🏡 Condo: {data["link_to_condo"]}\n'
 

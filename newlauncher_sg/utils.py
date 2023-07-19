@@ -54,7 +54,7 @@ def extract_main_data(soup, data):
     for image in images_data:
         image_src = image['data-src']
         images.append(image_src)
-    result_data['images_urls'] = images
+    result_data['images_urls'] = '\n'.join(images)
 
     # Extract Floor plans
     try:
@@ -65,7 +65,7 @@ def extract_main_data(soup, data):
         for plan in floor_plans_data:
             plan_href = plan['href']
             floor_plans.append(plan_href)
-        result_data['floor_plans_urls'] = floor_plans
+        result_data['floor_plans_urls'] = '\n'.join(floor_plans)
     except AttributeError:
         pass
 
@@ -75,7 +75,7 @@ def extract_main_data(soup, data):
         site_plans_data = soup.find('div', class_='image_hover_overlay_container text-center shadow-lg').find('a')[
             'href']
         site_plans.append(site_plans_data)
-        result_data['site_plans_urls'] = site_plans
+        result_data['site_plans_urls'] = '\n'.join(site_plans)
     except AttributeError:
         pass
 
