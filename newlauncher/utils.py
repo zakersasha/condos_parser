@@ -39,10 +39,14 @@ async def gather_project_details(soup, url):
         details_data['brochure'] = None
 
     items = [item.text.replace('\n', '') for item in project_details]
-    developers = str([x for x in project_details[-1].text.split('\n') if x]) \
+
+    developers_data = str([x for x in project_details[-1].text.split('\n') if x]) \
         .replace('[', '') \
         .replace(']', '') \
         .replace("'", "")
+    cleaned_items = developers_data.strip().split(',')
+    cleaned_data = [item.strip() for item in cleaned_items if item.strip()]
+    developers = ', '.join(cleaned_data)
 
     await gather_project_details_block(details_data, items, developers)
 
