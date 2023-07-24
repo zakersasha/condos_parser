@@ -87,6 +87,14 @@ def store_data_airtable(main, units, amenities):
             else:
                 main['units'] = new_unit_ids + exists_data[1]
 
+            del main['address']
+            del main['district']
+            del main['type']
+            del main['tenure']
+            del main['architect']
+            del main['developer']
+            del main['link_to_condo']
+
             json_data = {
                 'fields': main
             }
