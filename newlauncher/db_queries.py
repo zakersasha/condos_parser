@@ -18,9 +18,9 @@ def get_old_units_data(existing_data, units):
             headers=Config.AIR_TABLE_HEADERS)
         old_data.append(response.json()['fields'])
 
-    list_1_key_set = {(d['unit_type'], d['size_min']) for d in old_data}
+    list_1_key_set = {(d['unit_type']) for d in old_data}
     for dict_2 in units:
-        if (dict_2['unit_type'], int(dict_2['size_min'])) not in list_1_key_set:
+        if (dict_2['unit_type']) not in list_1_key_set:
             new_units.append(dict_2)
 
     return new_units

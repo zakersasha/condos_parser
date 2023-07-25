@@ -57,7 +57,6 @@ def update_units_data(old_data, new_data):
                       data['unit_type'] == old_unit['fields']['unit_type'] and data['size_min'] ==
                       old_unit['fields']['size_min']), None)
         if not found:
-            print(old_unit)
             record_id = old_unit['id']
             old_unit['fields']['all_units'] = 0.0
             old_unit['fields']['available_units'] = 0.0
@@ -84,11 +83,13 @@ def get_old_amenities_data(existing_data, amenities):
             headers=Config.AIR_TABLE_HEADERS)
         old_data.append(response.json()['fields'])
 
-    list_1_key_set = {d['amenities_name'] for d in old_data}
-    for dict_2 in amenities:
-        if dict_2['amenities_name'] not in list_1_key_set:
-            new_amenities.append(dict_2)
-
+    try:
+        list_1_key_set = {d['amenities_name'] for d in old_data}
+        for dict_2 in amenities:
+            if dict_2['amenities_name'] not in list_1_key_set:
+                new_amenities.append(dict_2)
+    except KeyError:
+        return []
     return new_amenities
 
 
@@ -113,20 +114,22 @@ def store_data_airtable(main, units, amenities):
 
         if record_id:
             label = 'Updated'
-
+            print('here')
             new_units, changes = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
             url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
 
-            if len(new_amenities) > 0 and len(new_units) > 0:
-                new_unit_ids = save_units_data(new_units)
+            if len(new_amenities) > 0:
                 new_amenities_ids = save_amenities_data(new_amenities)
 
                 if not exists_data[2]:
                     main['amenities'] = new_amenities_ids
                 else:
                     main['amenities'] = new_amenities_ids + exists_data[2]
+
+            if len(new_units) > 0:
+                new_unit_ids = save_units_data(new_units)
                 if not exists_data[1]:
                     main['units'] = new_unit_ids
                 else:
