@@ -45,7 +45,8 @@ def extract_main_data(soup, data):
     if 'Former' in data['Project Name:']:
         result_data['name'] = data['Project Name:'].split('(')[0][:-1]
     else:
-        result_data['name'] = data['Project Name:']
+        result_data['name'] = data['Project Name:'].replace('The Botany at Dairy Farm', 'The Botany').replace(
+            'Ki Residences at Brookvale', 'Ki Residences')
     result_data['link_to_condo'] = data['page_link']
 
     # Extract images

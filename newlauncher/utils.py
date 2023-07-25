@@ -28,7 +28,7 @@ async def gather_project_details(soup, url):
     if 'email' in name:
         name = await handle_email_name(url)
 
-    details_data['name'] = name
+    details_data['name'] = name.replace('Pullman Residences', 'Pullman Residence')
 
     project_details = soup.find("div", {"id": "section-2"}).find_all("p")
 
