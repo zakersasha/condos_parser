@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 
 import requests
@@ -68,13 +69,17 @@ async def gather_project_details_block(details_data, content, developers):
     details_data['previewing_start_date'] = await str_to_datetime(content[6])
     details_data['type'] = content[4]
     details_data['date_of_completion'] = await str_to_datetime(content[7])
-    details_data['tenure'] = content[8].replace('99 YearsLeasehold ', '99 YearsLeasehold')
+    details_data['tenure'] = await remove_extra_white_spaces(content[8])
     details_data['units_number'] = int(content[5].split(' ')[0])
     details_data['units_size'] = content[5].split(' ')[3]
     details_data['architect'] = content[10]
     details_data['developer'] = developers
 
     return details_data
+
+
+async def remove_extra_white_spaces(text):
+    return re.sub(r'\s+', ' ', text.replace('99 YearsLeasehold ', '99 YearsLeasehold')).strip()
 
 
 # PROJECT FACILITIES

@@ -38,10 +38,13 @@ def get_old_amenities_data(existing_data, amenities):
             headers=Config.AIR_TABLE_HEADERS)
         old_data.append(response.json()['fields'])
 
-    list_1_key_set = {d['amenities_name'] for d in old_data}
-    for dict_2 in amenities:
-        if dict_2['amenities_name'] not in list_1_key_set:
-            new_amenities.append(dict_2)
+    try:
+        list_1_key_set = {d['amenities_name'] for d in old_data}
+        for dict_2 in amenities:
+            if dict_2['amenities_name'] not in list_1_key_set:
+                new_amenities.append(dict_2)
+    except KeyError:
+        return []
 
     return new_amenities
 
@@ -67,25 +70,25 @@ def store_data_airtable(main, units, amenities):
 
         if record_id:
             label = 'Updated'
+            print('req')
 
             new_units = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
-            if len(new_amenities) == 0 and len(new_units) == 0:
-                return None, None, None, None
+            if len(new_amenities) > 0:
+                new_amenities_ids = save_amenities_data(new_amenities)
 
-            new_unit_ids = save_units_data(new_units)
-            new_amenities_ids = save_amenities_data(new_amenities)
+                if not exists_data[2]:
+                    main['amenities'] = new_amenities_ids
+                else:
+                    main['amenities'] = new_amenities_ids + exists_data[2]
 
-            url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
-            if not exists_data[2]:
-                main['amenities'] = new_amenities_ids
-            else:
-                main['amenities'] = new_amenities_ids + exists_data[2]
-            if not exists_data[1]:
-                main['units'] = new_unit_ids
-            else:
-                main['units'] = new_unit_ids + exists_data[1]
+            if len(new_units) > 0:
+                new_unit_ids = save_units_data(new_units)
+                if not exists_data[1]:
+                    main['units'] = new_unit_ids
+                else:
+                    main['units'] = new_unit_ids + exists_data[1]
 
             del main['address']
             del main['district']
@@ -93,7 +96,19 @@ def store_data_airtable(main, units, amenities):
             del main['tenure']
             del main['architect']
             del main['developer']
-            del main['link_to_condo']
+
+            try:
+                old_link = exists_data[3]['link_to_condo']
+            except KeyError:
+                old_link = 'empty'
+            new_link = main['link_to_condo']
+
+            if old_link != new_link and ',' not in old_link and old_link != 'empty':
+                main['link_to_condo'] = f"{old_link}, {new_link}"
+            elif old_link == 'empty':
+                main['link_to_condo'] = new_link
+            else:
+                pass
 
             json_data = {
                 'fields': main
@@ -104,6 +119,7 @@ def store_data_airtable(main, units, amenities):
             except (AttributeError, KeyError):
                 old_available_units = None
 
+            url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.MAIN_TABLE_ID}/{exists_data[0]}'
             r = requests.patch(url, json=json_data, headers=Config.AIR_TABLE_HEADERS)
             print(f'Data updated {r} {r.json()}')
             save_updated_to_file(exists_data[3], main)

@@ -114,7 +114,6 @@ def store_data_airtable(main, units, amenities):
 
         if record_id:
             label = 'Updated'
-            print('here')
             new_units, changes = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)
 
@@ -134,6 +133,21 @@ def store_data_airtable(main, units, amenities):
                     main['units'] = new_unit_ids
                 else:
                     main['units'] = new_unit_ids + exists_data[1]
+
+            del main['date_of_completion']
+
+            try:
+                old_link = exists_data[3]['link_to_condo']
+            except KeyError:
+                old_link = 'empty'
+            new_link = main['link_to_condo']
+
+            if old_link != new_link and ',' not in old_link and old_link != 'empty':
+                main['link_to_condo'] = f"{old_link}, {new_link}"
+            elif old_link == 'empty':
+                main['link_to_condo'] = new_link
+            else:
+                pass
 
             json_data = {
                 'fields': main

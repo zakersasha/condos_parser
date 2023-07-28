@@ -70,6 +70,19 @@ def extract_main_data(soup, data):
     except AttributeError:
         pass
 
+    # Extract overall available units
+    try:
+        overall_available_units = 0
+        available_units_data = soup.find('table', class_='table table-striped table-hover align-middle mb-0').find_all(
+            'tr')
+        for row in available_units_data[1:]:
+            rows = float(row.find_all('td')[-2].get_text(strip=True).split(' ')[0])
+            overall_available_units += rows
+
+        result_data['overall_available_units'] = overall_available_units
+    except AttributeError:
+        result_data['overall_available_units'] = 0
+
     # Extract Site Plans
     try:
         site_plans = []
@@ -89,7 +102,7 @@ def extract_main_data(soup, data):
     if 'Address:' in data:
         result_data['address'] = data['Address:']
     if 'District:' in data:
-        result_data['district'] = data['District:']
+        result_data['district'] = handle_district_value(data['District:'])
     if 'Total Units:' in data:
         result_data['units_number'] = float(data['Total Units:'].replace('Units', '').replace(' ', ''))
     if 'T.O.P Date:' in data:
@@ -129,7 +142,7 @@ def gather_amenities_data(soup):
     return amenities
 
 
-def gather_units_data(soup):
+def gather_units_data(soup, main_data):
     units = []
     table = soup.find('section', {'id': 'project_unit_types'})
     if not table:
@@ -189,7 +202,19 @@ def gather_units_data(soup):
             all_units = float(unit_availability_data.split('/')[1].replace(' ', '').replace('Units', ''))
         unit_detail['available_units'] = unit_availability
         unit_detail['all_units'] = all_units
+        unit_detail['district'] = main_data['district']
+        try:
+            unit_detail['date_of_completion'] = main_data['date_of_completion']
+        except (KeyError, AttributeError):
+            pass
 
         units.append(unit_detail)
 
     return units
+
+
+def handle_district_value(value):
+    if 'District' in value:
+        return value.split(' (')[0].replace('District ', '')
+    else:
+        return value

@@ -14,7 +14,7 @@ async def parse_new_launcher_sg():
             main_table_data, soup = gather_main_data(link)  # Все данные со страницы
             main = extract_main_data(soup, main_table_data)  # Данные основной таблицы
             amenities_table_data = gather_amenities_data(soup)  # Данные таблицы amenities
-            units_table_data = gather_units_data(soup)  # Данные таблицы units
+            units_table_data = gather_units_data(soup, main)  # Данные таблицы units
             if units_table_data == 'skip':
                 continue
 
