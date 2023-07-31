@@ -221,7 +221,7 @@ def gather_units_data(soup, main_data):
                 psf_max = float(psf_max_data.replace('$', '').replace(',', '').replace('psf', ''))
                 size_min = float(size_min_data.split('sqft')[0].replace(',', ''))
                 detail_data.append({'psf_min': psf_min, 'psf_max': psf_max, 'size_min': size_min})
-        except AttributeError:
+        except (AttributeError, ValueError):
             pass
 
         units.append(unit_detail)
