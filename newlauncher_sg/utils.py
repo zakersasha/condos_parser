@@ -104,7 +104,11 @@ def extract_main_data(soup, data):
     if 'District:' in data:
         result_data['district'] = handle_district_value(data['District:'])
     if 'Total Units:' in data:
-        result_data['units_number'] = float(data['Total Units:'].replace('Units', '').replace(' ', ''))
+        if '+' in data['Total Units:']:
+            result_data['units_number'] = float(
+                data['Total Units:'].split('+')[0].replace('Units', '').replace(' ', ''))
+        else:
+            result_data['units_number'] = float(data['Total Units:'].replace('Units', '').replace(' ', ''))
     if 'T.O.P Date:' in data:
         if 'Q' in data['T.O.P Date:']:
             date_string = data['T.O.P Date:'].split(' ')[1]
@@ -157,7 +161,7 @@ def gather_units_data(soup, main_data):
 
         unit_detail = {}
 
-        unit_type = unit_data[0].get_text(strip=True)
+        unit_type = unit_data[0].get_text(strip=True).replace('(', '').replace(')', '')
         unit_detail['unit_type'] = unit_type
 
         unit_size = unit_data[1].get_text(strip=True)

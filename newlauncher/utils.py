@@ -158,7 +158,7 @@ async def gather_project_units(soup, details):
             continue
 
         if '-' not in unit_data[2]:
-            result_data = {'unit_type': unit_data[0],
+            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', ''),
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].replace(',', '')),
                            'units_site_plans': units_site_plans,
@@ -166,7 +166,7 @@ async def gather_project_units(soup, details):
                            'date_of_completion': details['date_of_completion']
                            }
         else:
-            result_data = {'unit_type': unit_data[0],
+            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', ''),
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].split('-')[0].replace(' ', '').replace(',', '')),
                            'size_max': int(unit_data[2].split('-')[1].replace(' ', '').replace(',', '')),
