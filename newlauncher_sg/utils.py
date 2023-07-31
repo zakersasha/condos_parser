@@ -221,8 +221,8 @@ def gather_units_data(soup, main_data):
                 psf_min_data = row.find_all('td')[-4].get_text(strip=True)
                 psf_max_data = row.find_all('td')[-3].get_text(strip=True)
                 size_min_data = row.find_all('td')[-8].get_text(strip=True)
-                psf_min = float(psf_min_data.replace('$', '').replace(',', '').replace('psf', ''))
-                psf_max = float(psf_max_data.replace('$', '').replace(',', '').replace('psf', ''))
+                psf_min = round(float(psf_min_data.replace('$', '').replace(',', '.').replace('psf', '')), 1)
+                psf_max = round(float(psf_max_data.replace('$', '').replace(',', '.').replace('psf', '')), 1)
                 size_min = float(size_min_data.split('sqft')[0].replace(',', ''))
                 detail_data.append({'psf_min': psf_min, 'psf_max': psf_max, 'size_min': size_min})
         except (AttributeError, ValueError):
