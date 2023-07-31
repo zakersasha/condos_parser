@@ -144,6 +144,7 @@ def gather_amenities_data(soup):
 
 def gather_units_data(soup, main_data):
     units = []
+    detail_data = []
     table = soup.find('section', {'id': 'project_unit_types'})
     if not table:
         return 'skip'
@@ -208,7 +209,24 @@ def gather_units_data(soup, main_data):
         except (KeyError, AttributeError):
             pass
 
+        try:
+            available_units_data = soup.find('table',
+                                             class_='table table-striped table-hover align-middle mb-0').find_all(
+                'tr')
+            for row in available_units_data[1:]:
+                psf_min_data = row.find_all('td')[-4].get_text(strip=True)
+                psf_max_data = row.find_all('td')[-3].get_text(strip=True)
+                size_min_data = row.find_all('td')[-8].get_text(strip=True)
+                psf_min = float(psf_min_data.replace('$', '').replace(',', '').replace('psf', ''))
+                psf_max = float(psf_max_data.replace('$', '').replace(',', '').replace('psf', ''))
+                size_min = float(size_min_data.split('sqft')[0].replace(',', ''))
+                detail_data.append({'psf_min': psf_min, 'psf_max': psf_max, 'size_min': size_min})
+        except AttributeError:
+            pass
+
         units.append(unit_detail)
+
+    units = combine_psf_and_units_data(units, detail_data)
 
     return units
 
@@ -218,3 +236,15 @@ def handle_district_value(value):
         return value.split(' (')[0].replace('District ', '')
     else:
         return value
+
+
+def combine_psf_and_units_data(units, psf_data):
+    for unit in units:
+        size_min = unit["size_min"]
+        for psf_entry in psf_data:
+            if psf_entry["size_min"] == size_min:
+                unit["psf_min"] = psf_entry["psf_min"]
+                unit["psf_max"] = psf_entry["psf_max"]
+                break
+
+    return units
