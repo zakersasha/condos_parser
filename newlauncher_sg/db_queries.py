@@ -42,6 +42,10 @@ def update_units_data(old_data, new_data):
             if unit != found_data['fields']:
                 record_id = found_data['id']
                 url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{record_id}'
+                if unit['price_min'] is None or unit['price_min'] == '':
+                    del unit['price_min']
+                if unit['price_max'] is None or unit['price_max'] == '':
+                    del unit['price_max']
                 requests.patch(url, headers=Config.AIR_TABLE_HEADERS, data=json.dumps({'fields': unit}))
 
                 if unit.get('price_min', None) != found_data.get("fields", {}).get('price_min', None):
