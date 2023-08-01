@@ -43,7 +43,8 @@ def gather_main_data(link):
 def extract_main_data(soup, data):
     result_data = {}
     if 'Former' in data['Project Name:']:
-        result_data['name'] = data['Project Name:'].split('(')[0][:-1]
+        result_data['name'] = data['Project Name:'].split('(')[0][:-1].replace(
+            ' at Brookvale', '').replace('The Botany at Dairy Farm', 'The Botany')
     else:
         result_data['name'] = data['Project Name:'].replace('The Botany at Dairy Farm', 'The Botany').replace(
             ' at Brookvale', '')
