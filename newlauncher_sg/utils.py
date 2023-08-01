@@ -9,7 +9,7 @@ from config import Config
 
 def gather_projects_links():
     project_links = []
-    r = requests.get(f'https://www.newlaunches.sg/condominium/browse.html', headers=Config.NEW_LAUNCHER_HEADERS)
+    r = requests.get(f'https://www.newlaunches.sg/browse.html', headers=Config.NEW_LAUNCHER_HEADERS)
     soup = BeautifulSoup(r.text, 'html.parser')
 
     project_cards = soup.find_all('h2', class_='h6 m-0 p-2 text-nowrap overflow-hidden')

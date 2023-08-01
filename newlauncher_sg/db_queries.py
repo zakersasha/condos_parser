@@ -50,7 +50,7 @@ def update_units_data(old_data, new_data):
 
                 if unit.get('price_min', None) != found_data.get("fields", {}).get('price_min', None):
                     changes.append(
-                        f"{unit['unit_type']} price: {found_data.get('fields', {}).get('price_min', None)} → {unit['price_min']} ")
+                        f"{unit['unit_type']} price: {found_data.get('fields', {}).get('price_min', None)} → {unit.get('price_min', None)} ")
                 if unit['available_units'] != found_data['fields']['available_units']:
                     changes.append(
                         f"{unit['unit_type']} available units: {found_data['fields']['available_units']} → {unit['available_units']} ")
@@ -138,8 +138,10 @@ def store_data_airtable(main, units, amenities):
                 else:
                     main['units'] = new_unit_ids + exists_data[1]
 
-            del main['date_of_completion']
-
+            try:
+                del main['date_of_completion']
+            except KeyError:
+                pass
             try:
                 old_link = exists_data[3]['link_to_condo']
             except KeyError:
@@ -205,15 +207,17 @@ def save_units_data(units):
     ids_data = []
 
     for unit in units:
-        data_to_load = {'fields': unit, "typecast": True}
-        upload_json = json.dumps(data_to_load)
+        try:
+            data_to_load = {'fields': unit, "typecast": True}
+            upload_json = json.dumps(data_to_load)
 
-        url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}"
-        r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
-        print(f'Saving units {r}')
+            url = f"https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}"
+            r = requests.post(url, data=upload_json, headers=Config.AIR_TABLE_HEADERS)
+            print(f'Saving units {r}')
 
-        ids_data.append(r.json()['id'])
-
+            ids_data.append(r.json()['id'])
+        except (KeyError, AttributeError):
+            continue
     return ids_data
 
 
