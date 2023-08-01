@@ -70,7 +70,6 @@ def store_data_airtable(main, units, amenities):
 
         if record_id:
             label = 'Updated'
-            print('req')
 
             new_units = get_old_units_data(exists_data[1], units)
             new_amenities = get_old_amenities_data(exists_data[2], amenities)

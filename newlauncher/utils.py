@@ -158,7 +158,7 @@ async def gather_project_units(soup, details):
             continue
 
         if '-' not in unit_data[2]:
-            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', ''),
+            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', '').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].replace(',', '')),
                            'units_site_plans': units_site_plans,
@@ -166,7 +166,7 @@ async def gather_project_units(soup, details):
                            'date_of_completion': details['date_of_completion']
                            }
         else:
-            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', ''),
+            result_data = {'unit_type': unit_data[0].replace('(', '').replace(')', '').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                            'all_units': int(unit_data[1]),
                            'size_min': int(unit_data[2].split('-')[0].replace(' ', '').replace(',', '')),
                            'size_max': int(unit_data[2].split('-')[1].replace(' ', '').replace(',', '')),
@@ -216,7 +216,7 @@ async def gather_project_balances(soup):
 
         if not '-' in balance_data[4]:
             if not '-' in balance_data[3]:
-                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].replace('$', '').replace(',', '.').replace(
                                    'To Be Confirmed', '0')),
@@ -225,7 +225,7 @@ async def gather_project_balances(soup):
                                        'ToBeConfirmed', '0')),
                                }
             else:
-                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(
                                    balance_data[3].split('-')[0].replace('$', '').replace(',', '.').replace(
@@ -238,7 +238,7 @@ async def gather_project_balances(soup):
 
         else:
             if not '-' in balance_data[3]:
-                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].replace('$', '').replace(',', '.')),
                                'price_min': float(
@@ -247,7 +247,7 @@ async def gather_project_balances(soup):
                                    balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')),
                                }
             else:
-                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom'),
+                result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].split('-')[0].replace('$', '').replace(',', '.')),
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),

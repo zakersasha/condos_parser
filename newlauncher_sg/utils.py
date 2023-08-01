@@ -163,7 +163,7 @@ def gather_units_data(soup, main_data):
         unit_detail = {}
 
         unit_type = unit_data[0].get_text(strip=True).replace('(', '').replace(')', '')
-        unit_detail['unit_type'] = unit_type
+        unit_detail['unit_type'] = unit_type.replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility')
 
         unit_size = unit_data[1].get_text(strip=True)
         if '-' in unit_size:
