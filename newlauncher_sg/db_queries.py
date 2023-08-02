@@ -64,8 +64,14 @@ def update_units_data(old_data, new_data):
             record_id = old_unit['id']
             old_unit['fields']['all_units'] = 0.0
             old_unit['fields']['available_units'] = 0.0
-            del old_unit['fields']['Book Preview Button']
-            del old_unit['fields']['Condo Images']
+            try:
+                del old_unit['fields']['Book Preview Button']
+            except KeyError:
+                pass
+            try:
+                del old_unit['fields']['Condo Images']
+            except KeyError:
+                pass
 
             url = f'https://api.airtable.com/v0/{Config.AIR_TABLE_BASE_ID}/{Config.UNITS_TABLE_ID}/{record_id}'
             requests.patch(url, headers=Config.AIR_TABLE_HEADERS,
