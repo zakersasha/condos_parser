@@ -65,7 +65,7 @@ async def gather_project_details(soup, url):
 
 async def gather_project_details_block(details_data, content, developers):
     details_data['address'] = content[0]
-    details_data['district'] = content[1].split(' ')[0]
+    details_data['district'] = content[1].split(' ')[0].replace('D01', 'D1').replace('D02', 'D2').replace('D03', 'D3').replace('D04', 'D4').replace('D05', 'D5').replace('D06', 'D6').replace('D07', 'D7').replace('D08', 'D8').replace('D09', 'D9')
     details_data['previewing_start_date'] = await str_to_datetime(content[6])
     details_data['type'] = content[4]
     details_data['date_of_completion'] = await str_to_datetime(content[7])

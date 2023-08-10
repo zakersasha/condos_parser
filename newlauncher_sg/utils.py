@@ -239,8 +239,7 @@ def gather_units_data(soup, main_data):
 def handle_district_value(value):
     if 'District' in value:
         return value.split(' (')[0].replace('District ', '')
-    else:
-        return value
+    return value.replace('D01', 'D1').replace('D02', 'D2').replace('D03', 'D3').replace('D04', 'D4').replace('D05', 'D5').replace('D06', 'D6').replace('D07', 'D7').replace('D08', 'D8').replace('D09', 'D9')
 
 
 def combine_psf_and_units_data(units, psf_data):
