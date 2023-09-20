@@ -32,3 +32,11 @@ class Config:
     MAIN_TABLE_ID = os.environ.get('MAIN_TABLE_ID')
     AMENITIES_TABLE_ID = os.environ.get('AMENITIES_TABLE_ID')
     UNITS_TABLE_ID = os.environ.get('UNITS_TABLE_ID')
+
+    # Postgres conf
+    DB_HOST = os.environ.get('DB_HOST')
+    DB_PORT = os.environ.get('DB_PORT')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD')
+    DB_NAME = os.environ.get('DB_NAME')
+    DB_TABLE_NAME = os.environ.get('DB_TABLE_NAME')
+    DB_USERNAME = os.environ.get('DB_USERNAME')
