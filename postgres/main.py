@@ -40,5 +40,3 @@ def postgres_integration():
         print(e)
         pass
 
-
-postgres_integration()
