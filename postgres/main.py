@@ -39,4 +39,3 @@ def postgres_integration():
     except Exception as e:
         print(e)
         pass
-

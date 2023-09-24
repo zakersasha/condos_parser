@@ -58,10 +58,10 @@ def save_amenities_data(data):
 
     insert_sql = """
         INSERT INTO amenities (
-            amenity_id, amenities_name, amenities_type, distance
+            amenity_id, amenities_name, amenities_type, distance, latest_update
         )
         VALUES (
-            %(amenity_id)s, %(amenities_name)s, %(amenities_type)s, %(distance)s
+            %(amenity_id)s, %(amenities_name)s, %(amenities_type)s, %(distance)s, %(latest_update)s
         );
         """
 
