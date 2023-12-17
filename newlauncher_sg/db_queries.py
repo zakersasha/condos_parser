@@ -149,6 +149,11 @@ def store_data_airtable(main, units, amenities):
             except KeyError:
                 pass
             try:
+                del main['previewing_start_date']
+            except KeyError:
+                pass
+
+            try:
                 old_link = exists_data[3]['link_to_condo']
             except KeyError:
                 old_link = 'empty'

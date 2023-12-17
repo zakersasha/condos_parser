@@ -97,6 +97,15 @@ def store_data_airtable(main, units, amenities):
             del main['developer']
 
             try:
+                del main['date_of_completion']
+            except KeyError:
+                pass
+            try:
+                del main['previewing_start_date']
+            except KeyError:
+                pass
+
+            try:
                 old_link = exists_data[3]['link_to_condo']
             except KeyError:
                 old_link = 'empty'

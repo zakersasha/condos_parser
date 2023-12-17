@@ -184,10 +184,10 @@ def gather_units_data(soup, main_data):
             price_max = None
         else:
             if 'K' in unit_price:
-                price_min = round(float('0.' + unit_price.split('$')[1].replace('K', '')), 2)
+                price_min = round(float('0.' + unit_price.split('$')[1].replace('K', '')), 2) * 1000000
                 price_max = None
             else:
-                price_min = round(float(unit_price.split('$')[1].replace('M', '')), 2)
+                price_min = round(float(unit_price.split('$')[1].replace('M', '')), 2) * 1000000
                 price_max = None
         unit_detail['price_min'] = price_min
         unit_detail['price_max'] = price_max

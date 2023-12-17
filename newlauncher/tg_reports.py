@@ -37,7 +37,8 @@ async def send_tg_report(data, label, new_units, total_units, old_available_unit
 
         params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
 
-        requests.post(url_text, params=params)
+        r = requests.post(url_text, params=params)
+        print(r.json())
         await asyncio.sleep(2)
 
     if label == 'Updated':
@@ -58,7 +59,8 @@ async def send_tg_report(data, label, new_units, total_units, old_available_unit
 
         params = {'text': message, 'chat_id': Config.TG_CHAT_ID, 'parse_mode': 'HTML'}
 
-        requests.post(url_text, params=params)
+        r1 = requests.post(url_text, params=params)
+        print(r1.json())
         await asyncio.sleep(2)
 
 
