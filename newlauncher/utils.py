@@ -207,9 +207,9 @@ async def gather_project_balances(soup):
 
             if '-' in balance_data[4]:
                 project_overall['overall_min_unit_price'] = float(
-                    balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', ''))
+                    balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', '')) * 1000000
                 project_overall['overall_max_unit_price'] = float(
-                    balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', ''))
+                    balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')) * 1000000
             else:
                 project_overall['overall_min_unit_price'] = float(
                     balance_data[4].replace('$', '').replace('M', '').replace(' ', ''))
@@ -222,7 +222,7 @@ async def gather_project_balances(soup):
                                    'To Be Confirmed', '0')),
                                'price_min': float(
                                    balance_data[4].replace('$', '').replace('M', '').replace(' ', '').replace(
-                                       'ToBeConfirmed', '0')),
+                                       'ToBeConfirmed', '0')) * 1000000,
                                }
             else:
                 result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
@@ -233,7 +233,7 @@ async def gather_project_balances(soup):
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),
                                'price_min': float(
                                    balance_data[4].replace('$', '').replace('M', '').replace(' ', '').replace(
-                                       'ToBeConfirmed', '0'))
+                                       'ToBeConfirmed', '0')) * 1000000
                                }
 
         else:
@@ -242,9 +242,9 @@ async def gather_project_balances(soup):
                                'available_units': int(balance_data[1]),
                                'psf_min': float(balance_data[3].replace('$', '').replace(',', '.')),
                                'price_min': float(
-                                   balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', '')),
+                                   balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', '')) * 1000000,
                                'price_max': float(
-                                   balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')),
+                                   balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')) * 1000000,
                                }
             else:
                 result_data = {'unit_type': balance_data[0].replace('Bedrom', 'Bedroom').replace('3 Bedroom + Utility + Yard', '3 Bedroom + Yard + Utility'),
@@ -252,9 +252,9 @@ async def gather_project_balances(soup):
                                'psf_min': float(balance_data[3].split('-')[0].replace('$', '').replace(',', '.')),
                                'psf_max': float(balance_data[3].split('-')[1].replace('$', '').replace(',', '.')),
                                'price_min': float(
-                                   balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', '')),
+                                   balance_data[4].split('-')[0].replace('$', '').replace('M', '').replace(' ', '')) * 1000000,
                                'price_max': float(
-                                   balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')),
+                                   balance_data[4].split('-')[1].replace('$', '').replace('M', '').replace(' ', '')) * 1000000,
                                }
         project_balances.append(result_data)
     return project_balances, project_overall

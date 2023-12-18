@@ -1,9 +1,10 @@
 from datetime import date
 
+import psycopg2
 import requests
 
 from config import Config
-from postgres.db import connection
+from postgres.db import db_params
 
 
 def gather_amenities_data():
@@ -54,32 +55,43 @@ def prepare_amenities_data(amenities_data):
 
 
 def save_amenities_data(data):
+    connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
 
     insert_sql = """
-        INSERT INTO amenities (
-            amenity_id, amenities_name, amenities_type, distance, latest_update
-        )
-        VALUES (
-            %(amenity_id)s, %(amenities_name)s, %(amenities_type)s, %(distance)s, %(latest_update)s
-        );
-        """
+                INSERT INTO amenities (
+                    amenity_id, amenities_name, amenities_type, distance, latest_update
+                )
+                VALUES (
+                    %(amenity_id)s, %(amenities_name)s, %(amenities_type)s, %(distance)s, %(latest_update)s
+                );
+                """
 
+    formatted_data = []
     for record in data:
+        formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
             key = key.split(')s')[0]
             if key not in record:
                 record[key] = None
+            formatted_record[key] = record[key]
+        formatted_data.append(formatted_record)
 
-        cursor.execute(insert_sql, record)
+    try:
+        cursor = connection.cursor()
+        cursor.executemany(insert_sql, formatted_data)
         connection.commit()
-
-    cursor.close()
-    connection.close()
+    except psycopg2.Error as e:
+        connection.rollback()
+        print("Ошибка при вставке записей:", e)
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def delete_old_amenities_data():
     try:
+        connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
         cur_date = date.today().strftime('%Y-%m-%d')
         delete_sql = """
@@ -91,7 +103,7 @@ def delete_old_amenities_data():
         connection.commit()
 
         cursor.close()
+        connection.close()
 
-        print("Rows deleted successfully.")
-    except Exception as e:
-        print(f"Error: {e}")
+    except psycopg2.Error as e:
+        print("Ошибка соединения с базой данных:", e)
