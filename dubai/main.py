@@ -1,5 +1,5 @@
 import requests
-import airtable
+from airtable import get_general_records, create_record, update_record, get_units_records
 
 
 def load_page(page_number):
@@ -217,12 +217,10 @@ def get_logo_url(id_):
 
 
 def parse_dubai():
-
-    general_records_in_db = airtable.get_general_records()
-    units_records_in_db = airtable.get_units_records(general_records_in_db)
+    general_records_in_db = get_general_records()
+    units_records_in_db = get_units_records(general_records_in_db)
 
     entities = load_entities()
-    residential_complex_info = get_residential_complex_info()
     for entity in entities:
         print(entity)
         title = entity["title"]
@@ -233,10 +231,10 @@ def parse_dubai():
         if not record:
             records_general = [general]
 
-            airtable.create_record("General", records_general)
+            create_record("General", records_general)
 
             for i in range(0, len(units), 10):
-                airtable.create_record("Units Info", units[i: i + 10])
+                create_record("Units Info", units[i: i + 10])
             continue
 
         for item in general["fields"].copy():
@@ -244,7 +242,7 @@ def parse_dubai():
                 general["fields"].pop(item)
         if general["fields"].get("link_to_condo", False):
             general["fields"].pop("link_to_condo")
-        airtable.update_record("General", general, record["id"])
+        update_record("General", general, record["id"])
         # # Проверка условия нахождения юнита в таблице Units Info
         units_db = units_records_in_db.get(record["id"], [])
         for index, unit in enumerate(units, 0):
@@ -267,15 +265,17 @@ def parse_dubai():
                         if unit_fields[item] == unit_db_fields.get(item, ""):
                             units[index]["fields"].pop(item)
 
-                    airtable.update_record("Units Info", units[index], unit_db["id"])
+                    update_record("Units Info", units[index], unit_db["id"])
 
                     break
 
             if in_db:
                 continue
 
-            airtable.create_record("Units Info", [unit])
+            create_record("Units Info", [unit])
 
+
+residential_complex_info = get_residential_complex_info()
 # print(requests.get("https://api.alnair.ae/v1/rc/search?page=1&limit=30&mapBounds%5Beast%5D=55.55305480957031&mapBounds%5Bnorth%5D=25.41350860804229&mapBounds%5Bsouth%5D=24.89453374486885&mapBounds%5Bwest%5D=54.96871948242188&isList=1&isPin=1").json())
 # print(requests.get("https://api.alnair.ae/v1/rc/view/1527").text)
 # print(requests.get("https://api.alnair.ae/v1/rc/1527/layouts/units").text)

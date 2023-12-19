@@ -3,12 +3,14 @@ from datetime import datetime
 from postgres.amenities import gather_amenities_data, save_amenities_data, prepare_amenities_data, \
     delete_old_amenities_data
 from postgres.db_queries import get_new_condos, get_available_condos, get_condos_count, get_available_condos_count, \
-    get_price_condos_count
+    get_price_condos_count, gather_select_count, gather_company_count, gather_available_count, \
+    gather_complete_percentage, gather_complete_percentage_no_units, gather_units_complete_percentage
 from postgres.general import gather_main_data, prepare_main_data, save_main_data, delete_old_main_data, \
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
     gather_oman_main_data, prepare_oman_main_data, save_oman_main_data
-from postgres.reports import condo_db_report, condo_partner_report
+from postgres.reports import condo_db_report, condo_partner_report, kofman_general_report, seven_spaces_general_report, \
+    wolsen_general_report
 from postgres.units import gather_units_data, prepare_units_data, save_units_data, delete_old_units_data, \
     gather_miami_units_data, prepare_miami_units_data, save_miami_units_data, gather_uk_units_data, save_uk_units_data, \
     prepare_uk_units_data, gather_dubai_units_data, prepare_dubai_units_data, save_dubai_units_data, \
@@ -183,3 +185,39 @@ def postgres_integration():
                          w1_new, w1_counter)
     condo_partner_report('Saola', now, saola_counter, s_new, s_counter,
                          s1_new, s1_counter)
+    make_tg_reports()
+
+
+def make_tg_reports():
+    select_count = gather_select_count('Kofman')
+    company_count = gather_company_count('Kofman')
+    available_count = gather_available_count('Kofman')
+    complete_percentage = gather_complete_percentage('Kofman')
+    try:
+        units_complete_percentage = gather_units_complete_percentage('Kofman')
+    except Exception:
+        units_complete_percentage = 0
+    kofman_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
+                          round(units_complete_percentage, 2))
+
+    select_count = gather_select_count('7Spaces')
+    company_count = gather_company_count('7Spaces')
+    available_count = gather_available_count('7Spaces')
+    complete_percentage = gather_complete_percentage('7Spaces')
+    try:
+        units_complete_percentage = gather_units_complete_percentage('7Spaces')
+    except Exception:
+        units_complete_percentage = 0
+    seven_spaces_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
+                                round(units_complete_percentage, 2))
+
+    select_count = gather_select_count('Wolsen')
+    company_count = gather_company_count('Wolsen')
+    available_count = gather_available_count('Wolsen')
+    complete_percentage = gather_complete_percentage_no_units('Wolsen')
+    try:
+        units_complete_percentage = gather_units_complete_percentage('Wolsen')
+    except Exception:
+        units_complete_percentage = 0
+    wolsen_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
+                          round(units_complete_percentage, 2))
