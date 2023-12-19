@@ -192,7 +192,7 @@ def save_main_data(data):
         overall_min_unit_price, overall_max_unit_price,
         location_map_attachments, units, amenities,
         floor_plans_urls, site_plans_urls,
-        "Condo ID", latest_update, description, city, companies
+        "Condo ID", latest_update, description, city, companies, selected
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(type)s, %(units_number)s, %(units_size)s,
@@ -204,7 +204,7 @@ def save_main_data(data):
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(location_map_attachments)s, %(units)s, %(amenities)s,
         %(floor_plans_urls)s, %(site_plans_urls)s,
-        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(companies)s
+        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(companies)s, %(selected)s
     );
     """
 
@@ -243,7 +243,7 @@ def save_dubai_main_data(data):
         overall_min_unit_psf, overall_max_unit_psf,
         overall_min_unit_price, overall_max_unit_price,
         units, site_plans_urls,
-        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies
+        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies, selected
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(date_of_completion)s,
@@ -253,7 +253,7 @@ def save_dubai_main_data(data):
         %(overall_min_unit_psf)s, %(overall_max_unit_psf)s,
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(units)s, %(site_plans_urls)s,
-        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s
+        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s, %(selected)s
     ) RETURNING id;
     """
 
@@ -289,14 +289,14 @@ def save_miami_main_data(data):
         link_to_condo, facilities, payment_plans,
         overall_min_unit_size, overall_max_unit_size,
         overall_min_unit_psf, overall_min_unit_price,
-        units, "Condo ID", latest_update, description, city, features, companies
+        units, "Condo ID", latest_update, description, city, features, companies, selected
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(date_of_completion)s,
         %(link_to_condo)s, %(facilities)s, %(payment_plans)s,
         %(overall_min_unit_size)s, %(overall_max_unit_size)s,
         %(overall_min_unit_psf)s,%(overall_min_unit_price)s,
-        %(units)s, %(condo_id)s, %(latest_update)s, %(description)s, %(city)s, %(features)s, %(companies)s
+        %(units)s, %(condo_id)s, %(latest_update)s, %(description)s, %(city)s, %(features)s, %(companies)s, %(selected)s
     ) RETURNING id;
     """
 
