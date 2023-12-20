@@ -52,7 +52,7 @@ def get_condos_count(company):
 
     query = """
                 SELECT COUNT(*) FROM general
-                WHERE %s = ANY(companies)
+                WHERE %s = ANY(selected)
                 """
 
     try:
@@ -73,7 +73,7 @@ def get_available_condos_count(company):
 
     query = """
                 SELECT COUNT(*) FROM general
-                WHERE %s = ANY(companies) AND overall_available_units > 0
+                WHERE %s = ANY(selected) AND overall_available_units > 0
                 """
 
     try:
@@ -94,7 +94,7 @@ def get_price_condos_count(company):
 
     query = """
                 SELECT COUNT(*) FROM general
-                WHERE %s = ANY(companies) AND overall_min_unit_price > 0
+                WHERE %s = ANY(selected) AND overall_min_unit_price > 0
                 """
 
     try:
