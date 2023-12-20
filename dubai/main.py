@@ -1,5 +1,5 @@
 import requests
-from airtable import get_general_records, create_record, update_record, get_units_records
+from dubai.airtable import get_general_records, create_record, update_record, get_units_records
 
 
 def load_page(page_number):
