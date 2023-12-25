@@ -7,11 +7,12 @@
 import requests
 
 
-def condo_db_report(date_time, new_condos, fact_condos, available_condos_count):
-    message = f'Последнее обновление БД: {date_time}\n\n' \
+def condo_db_report(city, date_time, new_condos, fact_condos, available_condos_count):
+    message = f'Город: {city}\n\n' \
+              f'Последнее обновление БД: {date_time}\n\n' \
               f'Новых кондо: ➕ {new_condos}\n\n' \
-              f'Всего кондо: {fact_condos}\n' \
-              f'Кондо с доступными юнитами: ➕ {available_condos_count}\n'
+              f'Всего кондо с доступными юнитами: {fact_condos}\n' \
+              f'Кондо с доступными юнитами прирост: ➕ {available_condos_count}\n'
 
     bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
     chat_id = '-1002134207391'
@@ -36,14 +37,20 @@ def condo_partner_report(partner,
                          available_condos_all,
                          available_condos_count,
                          min_price_condos_all,
-                         min_price_condos_counter):
+                         min_price_condos_counter,
+                         new_brochures_condos_list):
+    if len(new_brochures_condos_list) == 0:
+        condos_list = 'Нет'
+    else:
+        condos_list = ','.join(new_brochures_condos_list)
     message = f'Партнер: {partner}\n\n' \
               f'Последнее обновление БД: {date_time}\n' \
               f'Новых кондо: ➕ {new_condos}\n\n' \
               f'Кондо с доступными юнитами всего: {available_condos_all}\n' \
               f'Кондо с доступными юнитами прирост: ➕ {available_condos_count}\n\n' \
               f'Кондо с ценой всего: {min_price_condos_all}\n' \
-              f'Кондо с ценой прирост: ➕ {min_price_condos_counter}\n'
+              f'Кондо с ценой прирост: ➕ {min_price_condos_counter}\n' \
+              f'Новые брошюры: {condos_list}\n'
 
     bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
     chat_id = '-1002134207391'

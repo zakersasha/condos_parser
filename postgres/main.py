@@ -1,10 +1,12 @@
+import time
 from datetime import datetime
 
 from postgres.amenities import gather_amenities_data, save_amenities_data, prepare_amenities_data, \
     delete_old_amenities_data
 from postgres.db_queries import get_new_condos, get_available_condos, get_condos_count, get_available_condos_count, \
     get_price_condos_count, gather_select_count, gather_company_count, gather_available_count, \
-    gather_complete_percentage, gather_complete_percentage_no_units, gather_units_complete_percentage
+    gather_complete_percentage, gather_complete_percentage_no_units, gather_units_complete_percentage, \
+    get_brochure_condos_list
 from postgres.general import gather_main_data, prepare_main_data, save_main_data, delete_old_main_data, \
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
@@ -21,8 +23,12 @@ def postgres_integration():
     print('Postgres recording started')
 
     # condo_db_report
-    old_new_condos = get_new_condos()
-    old_available_condos = get_available_condos()
+    m_old_new_condos = get_new_condos('Miami')
+    m_old_available_condos = get_available_condos('Miami')
+    d_old_new_condos = get_new_condos('Dubai')
+    d_old_available_condos = get_available_condos('Dubai')
+    s_old_new_condos = get_new_condos('Singapore')
+    s_old_available_condos = get_available_condos('Singapore')
     seven_spaces_old = get_condos_count('7Spaces')
     kofman_old = get_condos_count('Kofman')
     wolsen_old = get_condos_count('Wolsen')
@@ -35,6 +41,10 @@ def postgres_integration():
     k1_old = get_price_condos_count('Kofman')
     w1_old = get_price_condos_count('Wolsen')
     s1_old = get_price_condos_count('Saola')
+    ss_condos_list_old = get_brochure_condos_list('7Spaces')
+    k_condos_list_old = get_brochure_condos_list('Kofman')
+    w_condos_list_old = get_brochure_condos_list('Wolsen')
+    s_condos_list_old = get_brochure_condos_list('Saola')
 
     # dubai general
     delete_old_units_data()
@@ -108,17 +118,41 @@ def postgres_integration():
         pass
 
     # condo_db_report
-    new_new_condos = get_new_condos()
-    new_available_condos = get_available_condos()
+    m_new_new_condos = get_new_condos('Miami')
+    m_new_available_condos = get_available_condos('Miami')
 
     # condo_db_report
-    new_counter = new_new_condos - old_new_condos
-    if new_counter < 0:
-        new_counter = 0
+    m_new_counter = m_new_new_condos - m_old_new_condos
+    if m_new_counter < 0:
+        m_new_counter = 0
     # condo_db_report
-    available_counter = new_available_condos - old_available_condos
-    if available_counter < 0:
-        available_counter = 0
+    m_available_counter = m_new_available_condos - m_old_available_condos
+    if m_available_counter < 0:
+        m_available_counter = 0
+
+    d_new_new_condos = get_new_condos('Dubai')
+    d_new_available_condos = get_available_condos('Dubai')
+
+    # condo_db_report
+    d_new_counter = d_new_new_condos - d_old_new_condos
+    if d_new_counter < 0:
+        d_new_counter = 0
+    # condo_db_report
+    d_available_counter = d_new_available_condos - d_old_available_condos
+    if d_available_counter < 0:
+        d_available_counter = 0
+
+    s_new_new_condos = get_new_condos('Singapore')
+    s_new_available_condos = get_available_condos('Singapore')
+
+    # condo_db_report
+    s_new_counter = s_new_new_condos - s_old_new_condos
+    if s_new_counter < 0:
+        s_new_counter = 0
+    # condo_db_report
+    s_available_counter = s_new_available_condos - s_old_available_condos
+    if s_available_counter < 0:
+        s_available_counter = 0
 
     seven_spaces_new = get_condos_count('7Spaces')
     kofman_new = get_condos_count('Kofman')
@@ -174,17 +208,45 @@ def postgres_integration():
     if s1_counter < 0:
         s1_counter = 0
 
+    print('sleeping')
+    time.sleep(20)
+
+    ss_condos_list_new = get_brochure_condos_list('7Spaces')
+    k_condos_list_new = get_brochure_condos_list('Kofman')
+    w_condos_list_new = get_brochure_condos_list('Wolsen')
+    s_condos_list_new = get_brochure_condos_list('Saola')
+
+    ss_condos_list = []
+    for item in ss_condos_list_old:
+        if item not in ss_condos_list_new:
+            ss_condos_list.append(item)
+    k_condos_list = []
+    for item in k_condos_list_old:
+        if item not in k_condos_list_new:
+            k_condos_list.append(item)
+    w_condos_list = []
+    for item in w_condos_list_old:
+        if item not in w_condos_list_new:
+            w_condos_list.append(item)
+    s_condos_list = []
+    for item in s_condos_list_old:
+        if item not in s_condos_list_new:
+            s_condos_list.append(item)
+
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    condo_db_report(now, new_counter, new_available_condos, available_counter)
+    condo_db_report('Miami', now, m_new_counter, m_new_available_condos, m_available_counter)
+    condo_db_report('Dubai', now, d_new_counter, d_new_available_condos, d_available_counter)
+    condo_db_report('Singapore', now, s_new_counter, s_new_available_condos, s_available_counter)
+
     condo_partner_report('7Spaces', now, seven_spaces_counter, ss_new, ss_counter,
-                         ss1_new, ss1_counter)
+                         ss1_new, ss1_counter, ss_condos_list)
     condo_partner_report('Kofman', now, kofman_counter, k_new, k_counter,
-                         k1_new, k1_counter)
+                         k1_new, k1_counter, k_condos_list)
     condo_partner_report('Wolsen', now, wolsen_counter, w_new, w_counter,
-                         w1_new, w1_counter)
+                         w1_new, w1_counter, w_condos_list)
     condo_partner_report('Saola', now, saola_counter, s_new, s_counter,
-                         s1_new, s1_counter)
+                         s1_new, s1_counter, s_condos_list)
     make_tg_reports()
 
 

@@ -3,18 +3,40 @@ import psycopg2
 from postgres.db import db_params
 
 
-def get_new_condos():
+def get_brochure_condos_list(company):
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
+
+    query = """
+        SELECT name
+        FROM general
+        WHERE brochure IS NULL
+        AND %s = ANY(companies)
+    """
+
+    try:
+        cursor.execute(query, (company,))
+        result = cursor.fetchall()
+        return [row[0] for row in result]
+    except psycopg2.Error as e:
+        connection.rollback()
+        print("Ошибка при вставке записей:", e)
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def get_new_condos(city):
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
 
     query = """
     SELECT COUNT(*) FROM general
-    WHERE city IN ('Dubai', 'Miami', 'Singapore')
+    WHERE city = %s
     """
 
     try:
-        cursor = connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query, (city,))
         result = cursor.fetchone()
         return result[0]
     except psycopg2.Error as e:
@@ -25,17 +47,17 @@ def get_new_condos():
         connection.close()
 
 
-def get_available_condos():
+def get_available_condos(city):
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
 
     query = """
         SELECT COUNT(*) FROM general
-        WHERE city IN ('Dubai', 'Miami', 'Singapore') AND overall_available_units > 0
+        WHERE city = %s AND overall_available_units > 0
         """
 
     try:
-        cursor.execute(query)
+        cursor.execute(query, (city,))
         result = cursor.fetchone()
         return result[0]
     except psycopg2.Error as e:
@@ -268,11 +290,11 @@ def gather_units_complete_percentage(company):
     query = """
             SELECT 
     (COUNT(units.size_min) + COUNT(units.price_min) + COUNT(units.psf_min) + COUNT(units.num_bedrooms) + COUNT(units.floor_plan_image_links)) * 100.0 / 
-    (SELECT COUNT(*) * 5 FROM units WHERE general_id IN (SELECT id FROM general WHERE overall_available_units > 0 AND %s = ANY(companies))) AS percentage_filled
+    (SELECT COUNT(*) * 5 FROM units WHERE general_id IN (SELECT id FROM general WHERE %s = ANY(companies))) AS percentage_filled
 FROM 
     units 
 WHERE 
-    general_id IN (SELECT id FROM general WHERE overall_available_units > 0 AND %s = ANY(companies))
+    general_id IN (SELECT id FROM general WHERE %s = ANY(companies))
                 
     """
     cursor.execute(query, (company, company,))
