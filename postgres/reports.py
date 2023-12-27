@@ -59,6 +59,85 @@ def condo_partner_report(partner,
     requests.post(url_text)
 
 
+def condo_partner_report_w(partner,
+                           date_time,
+                           new_condos,
+                           available_condos_all,
+                           available_condos_count,
+                           min_price_condos_all,
+                           min_price_condos_counter,
+                           new_brochures_condos_list, percentage_data):
+    if len(new_brochures_condos_list) == 0:
+        condos_list = 'Нет'
+    else:
+        condos_list = ','.join(new_brochures_condos_list)
+    message = f'Партнер: {partner}\n\n' \
+              f'Последнее обновление БД: {date_time}\n' \
+              f'Новых кондо: ➕ {new_condos}\n\n' \
+              f'Кондо с доступными юнитами всего: {available_condos_all}\n' \
+              f'Кондо с доступными юнитами прирост: ➕ {available_condos_count}\n\n' \
+              f'Кондо с ценой всего: {min_price_condos_all}\n' \
+              f'Кондо с ценой прирост: ➕ {min_price_condos_counter}\n' \
+              f'Новые брошюры: {condos_list}\n\n' \
+              f'Процент полноты Address: {round(percentage_data[0], 2)} %\n' \
+              f'Процент полноты District: {round(percentage_data[1], 2)} %\n' \
+              f'Процент полноты units_number: {round(percentage_data[2], 2)} %\n' \
+              f'Процент полноты date_of_completion: {round(percentage_data[3], 2)} %\n' \
+              f'Процент полноты facilities: {round(percentage_data[4], 2)} %\n' \
+              f'Процент полноты overall_min_unit_size: {round(percentage_data[5], 2)} %\n' \
+              f'Процент полноты overall_min_unit_psf: {round(percentage_data[6], 2)} %\n' \
+              f'Процент полноты overall_min_unit_price: {round(percentage_data[7], 2)} %\n' \
+              f'Процент полноты description: {round(percentage_data[8], 2)} %\n' \
+              f'Процент полноты payment_plans: {round(percentage_data[9], 2)} %\n' \
+              f'Процент полноты payment_plans_attached: {round(percentage_data[10], 2)} %\n' \
+              f'Процент полноты Units: {round(percentage_data[11], 2)} %\n'
+
+    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
+    chat_id = '-1002134207391'
+
+    url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+    requests.post(url_text)
+
+
+def condo_partner_report_k7(partner,
+                            date_time,
+                            new_condos,
+                            available_condos_all,
+                            available_condos_count,
+                            min_price_condos_all,
+                            min_price_condos_counter,
+                            new_brochures_condos_list, percentage_data):
+    if len(new_brochures_condos_list) == 0:
+        condos_list = 'Нет'
+    else:
+        condos_list = ','.join(new_brochures_condos_list)
+    message = f'Партнер: {partner}\n\n' \
+              f'Последнее обновление БД: {date_time}\n' \
+              f'Новых кондо: ➕ {new_condos}\n\n' \
+              f'Кондо с доступными юнитами всего: {available_condos_all}\n' \
+              f'Кондо с доступными юнитами прирост: ➕ {available_condos_count}\n\n' \
+              f'Кондо с ценой всего: {min_price_condos_all}\n' \
+              f'Кондо с ценой прирост: ➕ {min_price_condos_counter}\n' \
+              f'Новые брошюры: {condos_list}\n\n' \
+              f'Процент полноты Address: {round(percentage_data[0], 2)} %\n' \
+              f'Процент полноты District: {round(percentage_data[1], 2)} %\n' \
+              f'Процент полноты overall_available_units: {round(percentage_data[2], 2)} %\n' \
+              f'Процент полноты date_of_completion: {round(percentage_data[3], 2)} %\n' \
+              f'Процент полноты facilities: {round(percentage_data[4], 2)} %\n' \
+              f'Процент полноты overall_min_unit_size: {round(percentage_data[5], 2)} %\n' \
+              f'Процент полноты overall_min_unit_psf: {round(percentage_data[6], 2)} %\n' \
+              f'Процент полноты overall_min_unit_price: {round(percentage_data[7], 2)} %\n' \
+              f'Процент полноты description: {round(percentage_data[8], 2)} %\n' \
+              f'Процент полноты payment_plans: {round(percentage_data[9], 2)} %\n' \
+              f'Процент полноты Units: {round(percentage_data[10], 2)} %\n'
+
+    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
+    chat_id = '-1002134207391'
+
+    url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+    requests.post(url_text)
+
+
 """
 Dubai. Kofman и 7Spaces
 Необходимо рассчитать:

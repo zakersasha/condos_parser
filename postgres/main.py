@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 
 from postgres.amenities import gather_amenities_data, save_amenities_data, prepare_amenities_data, \
@@ -7,13 +6,13 @@ from postgres.db_queries import get_new_condos, get_available_condos, get_condos
     get_price_condos_count, gather_select_count, gather_company_count, gather_available_count, \
     gather_complete_percentage, gather_complete_percentage_no_units, gather_units_complete_percentage, \
     get_brochure_condos_list, gather_wolsen_units_complete_percentage, gather_wolsen_fields_percentage, \
-    gather_other_fields_percentage
+    gather_other_fields_percentage, k7_general_fields_percentage, w_general_fields_percentage
 from postgres.general import gather_main_data, prepare_main_data, save_main_data, delete_old_main_data, \
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
     gather_oman_main_data, prepare_oman_main_data, save_oman_main_data
 from postgres.reports import condo_db_report, condo_partner_report, kofman_general_report, seven_spaces_general_report, \
-    wolsen_general_report
+    wolsen_general_report, condo_partner_report_k7, condo_partner_report_w
 from postgres.units import gather_units_data, prepare_units_data, save_units_data, delete_old_units_data, \
     gather_miami_units_data, prepare_miami_units_data, save_miami_units_data, gather_uk_units_data, save_uk_units_data, \
     prepare_uk_units_data, gather_dubai_units_data, prepare_dubai_units_data, save_dubai_units_data, \
@@ -209,9 +208,6 @@ def postgres_integration():
     if s1_counter < 0:
         s1_counter = 0
 
-    print('sleeping')
-    time.sleep(20)
-
     ss_condos_list_new = get_brochure_condos_list('7Spaces')
     k_condos_list_new = get_brochure_condos_list('Kofman')
     w_condos_list_new = get_brochure_condos_list('Wolsen')
@@ -240,12 +236,21 @@ def postgres_integration():
     condo_db_report('Dubai', now, d_new_counter, d_new_available_condos, d_available_counter)
     condo_db_report('Singapore', now, s_new_counter, s_new_available_condos, s_available_counter)
 
-    condo_partner_report('7Spaces', now, seven_spaces_counter, ss_new, ss_counter,
-                         ss1_new, ss1_counter, ss_condos_list)
-    condo_partner_report('Kofman', now, kofman_counter, k_new, k_counter,
-                         k1_new, k1_counter, k_condos_list)
-    condo_partner_report('Wolsen', now, wolsen_counter, w_new, w_counter,
-                         w1_new, w1_counter, w_condos_list)
+    fields_percentage_completion_7 = k7_general_fields_percentage(
+        '7Spaces')
+
+    fields_percentage_completion_k = k7_general_fields_percentage(
+        'Kofman')
+
+    fields_percentage_completion_w = w_general_fields_percentage(
+        'Wolsen')
+
+    condo_partner_report_k7('7Spaces', now, seven_spaces_counter, ss_new, ss_counter,
+                            ss1_new, ss1_counter, ss_condos_list, fields_percentage_completion_7)
+    condo_partner_report_k7('Kofman', now, kofman_counter, k_new, k_counter,
+                            k1_new, k1_counter, k_condos_list, fields_percentage_completion_k)
+    condo_partner_report_w('Wolsen', now, wolsen_counter, w_new, w_counter,
+                           w1_new, w1_counter, w_condos_list, fields_percentage_completion_w)
     condo_partner_report('Saola', now, saola_counter, s_new, s_counter,
                          s1_new, s1_counter, s_condos_list)
     make_tg_reports()

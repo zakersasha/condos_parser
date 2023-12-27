@@ -404,7 +404,7 @@ def gather_other_fields_percentage(company):
         percentage_size_min = (filled_size_min / total_units) * 100 if total_units > 0 else 0
         percentage_num_bedrooms = (filled_num_bedrooms / total_units) * 100 if total_units > 0 else 0
         percentage_floor_plan_image_links = (
-                                                        filled_floor_plan_image_links / total_units) * 100 if total_units > 0 else 0
+                                                    filled_floor_plan_image_links / total_units) * 100 if total_units > 0 else 0
         percentage_price_min = (filled_price_min / total_units) * 100 if total_units > 0 else 0
         percentage_psf_min = (filled_psf_min / total_units) * 100 if total_units > 0 else 0
 
@@ -414,3 +414,51 @@ def gather_other_fields_percentage(company):
 
     except psycopg2.Error as e:
         print("Ошибка при работе с базой данных:", e)
+
+
+def k7_general_fields_percentage(company):
+    connection = psycopg2.connect(**db_params)
+
+    fields_to_check = [
+        'Address', 'District', 'overall_available_units', 'date_of_completion', 'facilities',
+        'overall_min_unit_size', 'overall_min_unit_psf', 'overall_min_unit_price', 'description',
+        'payment_plans', 'Units'
+    ]
+
+    completion_percentages = []
+    for field in fields_to_check:
+        query = f"SELECT (COUNT(*) FILTER (WHERE {field} IS NOT NULL) * 100.0) / COUNT(*) AS completion_percentage FROM general WHERE %s = ANY(companies)"
+        cursor = connection.cursor()
+        cursor.execute(query, (company,))
+
+        completion_percentage = cursor.fetchone()[0]
+        completion_percentages.append(completion_percentage)
+
+        cursor.close()
+    connection.close()
+
+    return completion_percentages
+
+
+def w_general_fields_percentage(company):
+    connection = psycopg2.connect(**db_params)
+
+    fields_to_check = [
+        'Address', 'District', 'units_number', 'date_of_completion', 'facilities',
+        'overall_min_unit_size', 'overall_min_unit_psf', 'overall_min_unit_price', 'description',
+        'payment_plans', 'payment_plans_attached', 'Units'
+    ]
+
+    completion_percentages = []
+    for field in fields_to_check:
+        query = f"SELECT (COUNT(*) FILTER (WHERE {field} IS NOT NULL) * 100.0) / COUNT(*) AS completion_percentage FROM general WHERE %s = ANY(companies)"
+        cursor = connection.cursor()
+        cursor.execute(query, (company,))
+
+        completion_percentage = cursor.fetchone()[0]
+        completion_percentages.append(completion_percentage)
+
+        cursor.close()
+    connection.close()
+
+    return completion_percentages
