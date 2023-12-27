@@ -6,7 +6,8 @@ from postgres.amenities import gather_amenities_data, save_amenities_data, prepa
 from postgres.db_queries import get_new_condos, get_available_condos, get_condos_count, get_available_condos_count, \
     get_price_condos_count, gather_select_count, gather_company_count, gather_available_count, \
     gather_complete_percentage, gather_complete_percentage_no_units, gather_units_complete_percentage, \
-    get_brochure_condos_list
+    get_brochure_condos_list, gather_wolsen_units_complete_percentage, gather_wolsen_fields_percentage, \
+    gather_other_fields_percentage
 from postgres.general import gather_main_data, prepare_main_data, save_main_data, delete_old_main_data, \
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
@@ -259,8 +260,25 @@ def make_tg_reports():
         units_complete_percentage = gather_units_complete_percentage('Kofman')
     except Exception:
         units_complete_percentage = 0
+    percentage_size_min, percentage_num_bedrooms, percentage_floor_plan_image_links, percentage_price_min, percentage_psf_min = gather_other_fields_percentage(
+        'Kofman')
+    seven_spaces_general_report(select_count,
+                                company_count,
+                                available_count,
+                                round(complete_percentage, 2),
+                                round(units_complete_percentage, 2),
+                                round(percentage_size_min, 2),
+                                round(percentage_num_bedrooms, 2),
+                                round(percentage_floor_plan_image_links, 2),
+                                round(percentage_price_min, 2),
+                                round(percentage_psf_min, 2))
     kofman_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
-                          round(units_complete_percentage, 2))
+                          round(units_complete_percentage, 2),
+                          round(percentage_size_min, 2),
+                          round(percentage_num_bedrooms, 2),
+                          round(percentage_floor_plan_image_links, 2),
+                          round(percentage_price_min, 2),
+                          round(percentage_psf_min, 2))
 
     select_count = gather_select_count('7Spaces')
     company_count = gather_company_count('7Spaces')
@@ -270,16 +288,29 @@ def make_tg_reports():
         units_complete_percentage = gather_units_complete_percentage('7Spaces')
     except Exception:
         units_complete_percentage = 0
-    seven_spaces_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
-                                round(units_complete_percentage, 2))
+    percentage_size_min, percentage_num_bedrooms, percentage_floor_plan_image_links, percentage_price_min, percentage_psf_min = gather_other_fields_percentage(
+        '7Spaces')
+    seven_spaces_general_report(select_count,
+                                company_count,
+                                available_count,
+                                round(complete_percentage, 2),
+                                round(units_complete_percentage, 2),
+                                round(percentage_size_min, 2),
+                                round(percentage_num_bedrooms, 2),
+                                round(percentage_floor_plan_image_links, 2),
+                                round(percentage_price_min, 2),
+                                round(percentage_psf_min, 2))
 
     select_count = gather_select_count('Wolsen')
     company_count = gather_company_count('Wolsen')
     available_count = gather_available_count('Wolsen')
     complete_percentage = gather_complete_percentage_no_units('Wolsen')
     try:
-        units_complete_percentage = gather_units_complete_percentage('Wolsen')
+        units_complete_percentage = gather_wolsen_units_complete_percentage('Wolsen')
     except Exception:
         units_complete_percentage = 0
+    percentage_size_min, percentage_num_bedrooms, percentage_floor_plan_image_links = gather_wolsen_fields_percentage(
+        'Wolsen')
     wolsen_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
-                          round(units_complete_percentage, 2))
+                          round(units_complete_percentage, 2), round(percentage_size_min, 2),
+                          round(percentage_num_bedrooms, 2), round(percentage_floor_plan_image_links, 2))

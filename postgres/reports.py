@@ -84,13 +84,20 @@ Units (типы юнитов) - есть ли в разрезе кондо ти�
 """
 
 
-def kofman_general_report(select_count, company_count, available_count, complete_percentage, units_complete_percentage):
+def kofman_general_report(select_count, company_count, available_count, complete_percentage, units_complete_percentage,
+                          percentage_size_min, percentage_num_bedrooms, percentage_floor_plan_image_links,
+                          percentage_price_min, percentage_psf_min):
     message = f'Партнер: Kofman\n\n' \
               f'Количество выбранных кондо: {select_count}\n' \
               f'Количество кондо компании: {company_count}\n' \
               f'Кондо с доступными юнитами: {available_count}\n' \
               f'Процент полноты данных: {complete_percentage} %\n' \
-              f'Процент полноты данных юнитов: {units_complete_percentage} %\n'
+              f'Процент полноты данных юнитов: {units_complete_percentage} %\n\n' \
+              f'Процент полноты size_min: {percentage_size_min} %\n' \
+              f'Процент полноты num_bedrooms: {percentage_num_bedrooms} %\n' \
+              f'Процент полноты floor_plan_image_links: {percentage_floor_plan_image_links} %\n' \
+              f'Процент полноты price_min: {percentage_price_min} %\n' \
+              f'Процент полноты psf_min: {percentage_psf_min} %\n'
 
     bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
     chat_id = '-1002134207391'
@@ -100,13 +107,19 @@ def kofman_general_report(select_count, company_count, available_count, complete
 
 
 def seven_spaces_general_report(select_count, company_count, available_count, complete_percentage,
-                                units_complete_percentage):
+                                units_complete_percentage, percentage_size_min, percentage_num_bedrooms,
+                                percentage_floor_plan_image_links, percentage_price_min, percentage_psf_min):
     message = f'Партнер: 7Spaces\n\n' \
               f'Количество выбранных кондо: {select_count}\n' \
               f'Количество кондо компании: {company_count}\n' \
               f'Кондо с доступными юнитами: {available_count}\n' \
               f'Процент полноты данных: {complete_percentage} %\n' \
-              f'Процент полноты данных юнитов: {units_complete_percentage} %\n'
+              f'Процент полноты данных юнитов: {units_complete_percentage} %\n\n' \
+              f'Процент полноты size_min: {percentage_size_min} %\n' \
+              f'Процент полноты num_bedrooms: {percentage_num_bedrooms} %\n' \
+              f'Процент полноты floor_plan_image_links: {percentage_floor_plan_image_links} %\n' \
+              f'Процент полноты price_min: {percentage_price_min} %\n' \
+              f'Процент полноты psf_min: {percentage_psf_min} %\n'
 
     bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
     chat_id = '-1002134207391'
@@ -140,13 +153,17 @@ Units (типы юнитов)
 """
 
 
-def wolsen_general_report(select_count, company_count, available_count, complete_percentage, units_complete_percentage):
+def wolsen_general_report(select_count, company_count, available_count, complete_percentage, units_complete_percentage,
+                          percentage_size_min, percentage_num_bedrooms, percentage_floor_plan_image_links):
     message = f'Партнер: Wolsen\n\n' \
               f'Количество выбранных кондо: {select_count}\n' \
               f'Количество кондо компании: {company_count}\n' \
               f'Кондо с доступными юнитами: {available_count}\n' \
               f'Процент полноты данных: {complete_percentage} %\n' \
-              f'Процент полноты данных юнитов: {units_complete_percentage} %\n'
+              f'Процент полноты данных юнитов: {units_complete_percentage} %\n\n' \
+              f'Процент полноты size_min: {percentage_size_min} %\n' \
+              f'Процент полноты num_bedrooms: {percentage_num_bedrooms} %\n' \
+              f'Процент полноты floor_plan_image_links: {percentage_floor_plan_image_links} %\n'
 
     bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
     chat_id = '-1002134207391'
