@@ -420,7 +420,7 @@ def k7_general_fields_percentage(company):
     connection = psycopg2.connect(**db_params)
 
     fields_to_check = [
-        'Address', 'District', 'overall_available_units', 'date_of_completion', 'facilities',
+        'address', 'district', 'overall_available_units', 'date_of_completion', 'facilities',
         'overall_min_unit_size', 'overall_min_unit_psf', 'overall_min_unit_price', 'description',
         'payment_plans', 'Units'
     ]
@@ -444,7 +444,7 @@ def w_general_fields_percentage(company):
     connection = psycopg2.connect(**db_params)
 
     fields_to_check = [
-        'Address', 'District', 'units_number', 'date_of_completion', 'facilities',
+        'address', 'district', 'units_number', 'date_of_completion', 'facilities',
         'overall_min_unit_size', 'overall_min_unit_psf', 'overall_min_unit_price', 'description',
         'payment_plans', 'payment_plans_attached', 'Units'
     ]

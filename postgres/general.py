@@ -501,7 +501,11 @@ def prepare_miami_main_data(main_data):
     for item in main_data:
         data = item['fields']
         data['latest_update'] = date.today().strftime('%Y-%m-%d')
-
+        try:
+            if data['payment_plans_attached']:
+                data['payment_plans_attached'] = [data['payment_plans_attached'][0]['url']]
+        except KeyError:
+            pass
         try:
             data['overall_min_unit_price'] = float(data['overall_min_unit_price'])
         except (ValueError, KeyError):
