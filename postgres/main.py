@@ -10,13 +10,14 @@ from postgres.db_queries import get_new_condos, get_available_condos, get_condos
 from postgres.general import gather_main_data, prepare_main_data, save_main_data, delete_old_main_data, \
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
-    gather_oman_main_data, prepare_oman_main_data, save_oman_main_data
+    gather_oman_main_data, prepare_oman_main_data, save_oman_main_data, gather_bali_main_data, prepare_bali_main_data, \
+    save_bali_main_data
 from postgres.reports import condo_db_report, condo_partner_report, kofman_general_report, seven_spaces_general_report, \
     wolsen_general_report, condo_partner_report_k7, condo_partner_report_w
 from postgres.units import gather_units_data, prepare_units_data, save_units_data, delete_old_units_data, \
     gather_miami_units_data, prepare_miami_units_data, save_miami_units_data, gather_uk_units_data, save_uk_units_data, \
     prepare_uk_units_data, gather_dubai_units_data, prepare_dubai_units_data, save_dubai_units_data, \
-    delete_units_with_no_general
+    delete_units_with_no_general, gather_bali_units_data, prepare_bali_units_data, save_bali_units_data
 
 
 def postgres_integration():
@@ -52,6 +53,12 @@ def postgres_integration():
     dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
     save_dubai_main_data(dubai_main_data_to_save)
     print('dubai general table updated')
+
+    # bali general
+    bali_main_data = gather_bali_main_data()
+    bali_main_data_to_save = prepare_bali_main_data(bali_main_data)
+    save_bali_main_data(bali_main_data_to_save)
+    print('bali general table updated')
 
     # oman general
     oman_main_data = gather_oman_main_data()
@@ -97,6 +104,12 @@ def postgres_integration():
     uk_units_data_to_save = prepare_uk_units_data(uk_units_data, all_general_data)
     save_uk_units_data(uk_units_data_to_save)
     print('uk units table updated')
+
+    # bali units
+    bali_units_data = gather_bali_units_data()
+    bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
+    save_bali_units_data(bali_units_data_to_save)
+    print('bali units table updated')
 
     # dubai units
     dubai_units_data = gather_dubai_units_data()

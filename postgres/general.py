@@ -63,6 +63,36 @@ def gather_dubai_main_data():
     return all_records
 
 
+def gather_bali_main_data():
+    all_records = []
+
+    params = {
+        'pageSize': 100,
+    }
+
+    while True:
+        response = requests.get(f'https://api.airtable.com/v0/app55xAPfpJD3zubt/tblOuLrGqrN4cbIoe',
+                                headers={
+                                    "Authorization": "Bearer " + 'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c',
+                                    "Content-Type": "application/json",
+                                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                  'like Gecko) Mobile/15E148 Instagram 278.0.0.19.115 (iPhone13,2; iOS 16_2; en_GB; en-GB; '
+                                                  'scale=3.00; 1170x2532; 463736449) NW/3'}, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            records = data['records']
+            all_records.extend(records)
+
+            if 'offset' in data:
+                params['offset'] = data['offset']
+            else:
+                break
+        else:
+            print(f"Failed to retrieve records (status code: {response.status_code}): {response.text}")
+            break
+    return all_records
+
+
 def gather_miami_main_data():
     all_records = []
 
@@ -279,6 +309,45 @@ def save_dubai_main_data(data):
         connection.close()
 
 
+def save_bali_main_data(data):
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
+
+    insert_sql = """
+    INSERT INTO general (
+        name, address, district, units_number, link_to_condo, brochure, facilities,
+        overall_available_units, units, "Condo ID", latest_update, city, companies
+    )
+    VALUES (
+        %(name)s, %(address)s, %(district)s, %(units_number)s, %(link_to_condo)s,
+        %(brochure)s, %(facilities)s, %(overall_available_units)s,
+        %(units)s,
+        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s
+    ) RETURNING id;
+    """
+
+    formatted_data = []
+    for record in data:
+        formatted_record = {}
+        for key in insert_sql.split('%(')[1:]:
+            key = key.split(')s')[0]
+            if key not in record:
+                record[key] = None
+            formatted_record[key] = record[key]
+        formatted_data.append(formatted_record)
+
+    try:
+        cursor = connection.cursor()
+        cursor.executemany(insert_sql, formatted_data)
+        connection.commit()
+    except psycopg2.Error as e:
+        connection.rollback()
+        print("Ошибка при вставке записей:", e)
+    finally:
+        cursor.close()
+        connection.close()
+
+
 def save_miami_main_data(data):
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
@@ -469,6 +538,25 @@ def prepare_dubai_main_data(main_data):
             pass
         try:
             data['payment_plans'] = str(data['payment_plans'])
+        except (ValueError, KeyError):
+            pass
+        try:
+            if data['brochure']:
+                data['brochure'] = [data['brochure'][0]['url']]
+        except KeyError:
+            pass
+        main_data_to_save.append(data)
+
+    return main_data_to_save
+
+
+def prepare_bali_main_data(main_data):
+    main_data_to_save = []
+    for item in main_data:
+        data = item['fields']
+        data['latest_update'] = date.today().strftime('%Y-%m-%d')
+        try:
+            data['Condo ID'] = str(data['Condo ID'])
         except (ValueError, KeyError):
             pass
         try:
