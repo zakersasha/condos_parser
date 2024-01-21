@@ -529,3 +529,40 @@ def find_dict_with_string(lst, search_string):
         if d.get('units', None):
             if search_string in d.get('units', []):
                 return d['id']
+
+
+def check_today_sync(city):
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
+
+    today = date.today()
+    formatted_today = today.strftime('%Y-%m-%d')
+    try:
+        if type(city) is str:
+            query = f"""
+            SELECT COUNT(*) FROM general
+            WHERE city = '{city}' AND latest_update = '{formatted_today}';
+            """
+
+            cursor.execute(query)
+
+            result = cursor.fetchone()
+
+            return result[0]
+        else:
+            query = f"""
+            SELECT COUNT(*) FROM your_table
+            WHERE city = ANY(%s) AND latest_update = %s;
+            """
+
+            cursor.execute(query, (city, formatted_today))
+
+            result = cursor.fetchone()
+            return result[0]
+
+    except psycopg2.Error as e:
+        connection.rollback()
+        print("Ошибка при вставке записей:", e)
+    finally:
+        cursor.close()
+        connection.close()

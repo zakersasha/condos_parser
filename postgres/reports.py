@@ -42,6 +42,8 @@ def condo_partner_report(partner,
     if len(new_brochures_condos_list) == 0:
         condos_list = 'Нет'
     else:
+        while None in new_brochures_condos_list:
+            new_brochures_condos_list.remove(None)
         condos_list = ','.join(new_brochures_condos_list)
     message = f'Партнер: {partner}\n\n' \
               f'Последнее обновление БД: {date_time}\n' \
@@ -70,6 +72,8 @@ def condo_partner_report_w(partner,
     if len(new_brochures_condos_list) == 0:
         condos_list = 'Нет'
     else:
+        while None in new_brochures_condos_list:
+            new_brochures_condos_list.remove(None)
         condos_list = ','.join(new_brochures_condos_list)
     message = f'Партнер: {partner}\n\n' \
               f'Последнее обновление БД: {date_time}\n' \
@@ -110,6 +114,8 @@ def condo_partner_report_k7(partner,
     if len(new_brochures_condos_list) == 0:
         condos_list = 'Нет'
     else:
+        while None in new_brochures_condos_list:
+            new_brochures_condos_list.remove(None)
         condos_list = ','.join(new_brochures_condos_list)
     message = f'Партнер: {partner}\n\n' \
               f'Последнее обновление БД: {date_time}\n' \
