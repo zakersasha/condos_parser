@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 import psycopg2
@@ -659,3 +660,33 @@ def get_all_records():
     cursor.close()
     connection.close()
     return records
+
+
+def update_airtable_record(api_key, base_id, table_name, record_id, field_name, new_value):
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    url = f"https://api.airtable.com/v0/{base_id}/{table_name}"
+
+    data = {
+        "records": [
+            {
+                "id": record_id,
+                "fields": {
+                    field_name: new_value
+                }
+            }
+        ]
+    }
+    try:
+        response = requests.patch(url, headers=headers, data=json.dumps(data))
+
+        if response.status_code == 200:
+            print("Record updated successfully.")
+        else:
+            print(f"Failed to update record. Status code: {response.status_code}, Response: {response.text}")
+    except Exception:
+        print('error')
+        pass

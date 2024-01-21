@@ -11,13 +11,14 @@ from postgres.general import gather_main_data, prepare_main_data, save_main_data
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
     gather_oman_main_data, prepare_oman_main_data, save_oman_main_data, gather_bali_main_data, prepare_bali_main_data, \
-    save_bali_main_data
+    save_bali_main_data, update_airtable_record
 from postgres.reports import condo_db_report, condo_partner_report, kofman_general_report, seven_spaces_general_report, \
     wolsen_general_report, condo_partner_report_k7, condo_partner_report_w
 from postgres.units import gather_units_data, prepare_units_data, save_units_data, delete_old_units_data, \
     gather_miami_units_data, prepare_miami_units_data, save_miami_units_data, gather_uk_units_data, save_uk_units_data, \
     prepare_uk_units_data, gather_dubai_units_data, prepare_dubai_units_data, save_dubai_units_data, \
-    delete_units_with_no_general, gather_bali_units_data, prepare_bali_units_data, save_bali_units_data
+    delete_units_with_no_general, gather_bali_units_data, prepare_bali_units_data, save_bali_units_data, \
+    check_today_sync
 
 
 def postgres_integration():
@@ -47,76 +48,97 @@ def postgres_integration():
     w_condos_list_old = get_brochure_condos_list('Wolsen')
     s_condos_list_old = get_brochure_condos_list('Saola')
 
-    # dubai general
     delete_old_units_data()
-    dubai_main_data = gather_dubai_main_data()
-    dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
-    save_dubai_main_data(dubai_main_data_to_save)
-    print('dubai general table updated')
+
+    # dubai general
+    rows_count = check_today_sync('Dubai')
+    if rows_count == 0:
+        dubai_main_data = gather_dubai_main_data()
+        dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
+        save_dubai_main_data(dubai_main_data_to_save)
+        print('dubai general table updated')
+
+        all_general_data = get_all_records()
+
+        # dubai units
+        dubai_units_data = gather_dubai_units_data()
+        dubai_units_data_to_save = prepare_dubai_units_data(dubai_units_data, all_general_data)
+        save_dubai_units_data(dubai_units_data_to_save)
+        print('dubai units table updated')
 
     # bali general
-    bali_main_data = gather_bali_main_data()
-    bali_main_data_to_save = prepare_bali_main_data(bali_main_data)
-    save_bali_main_data(bali_main_data_to_save)
-    print('bali general table updated')
+    rows_count = check_today_sync('Bali')
+    if rows_count == 0:
+        bali_main_data = gather_bali_main_data()
+        bali_main_data_to_save = prepare_bali_main_data(bali_main_data)
+        save_bali_main_data(bali_main_data_to_save)
+        print('bali general table updated')
+
+        all_general_data = get_all_records()
+
+        # bali units
+        bali_units_data = gather_bali_units_data()
+        bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
+        save_bali_units_data(bali_units_data_to_save)
+        print('bali units table updated')
 
     # oman general
-    oman_main_data = gather_oman_main_data()
-    oman_main_data_to_save = prepare_oman_main_data(oman_main_data)
-    save_oman_main_data(oman_main_data_to_save)
-    print('oman general table updated')
+    rows_count = check_today_sync('Oman')
+    if rows_count == 0:
+        oman_main_data = gather_oman_main_data()
+        oman_main_data_to_save = prepare_oman_main_data(oman_main_data)
+        save_oman_main_data(oman_main_data_to_save)
+        print('oman general table updated')
 
     # miami general
-    miami_main_data = gather_miami_main_data()
-    miami_main_data_to_save = prepare_miami_main_data(miami_main_data)
-    save_miami_main_data(miami_main_data_to_save)
-    print('miami general table updated')
+    rows_count = check_today_sync('Miami')
+    if rows_count == 0:
+        miami_main_data = gather_miami_main_data()
+        miami_main_data_to_save = prepare_miami_main_data(miami_main_data)
+        save_miami_main_data(miami_main_data_to_save)
+        print('miami general table updated')
+
+        all_general_data = get_all_records()
+
+        # miami units
+        miami_units_data = gather_miami_units_data()
+        miami_units_data_to_save = prepare_miami_units_data(miami_units_data, all_general_data)
+        save_miami_units_data(miami_units_data_to_save)
+        print('miami units table updated')
 
     # uk general
-    uk_main_data = gather_uk_main_data()
-    uk_main_data_to_save = prepare_uk_main_data(uk_main_data)
-    save_uk_main_data(uk_main_data_to_save)
-    print('uk general table updated')
+    rows_count = check_today_sync(['Birmingham', 'Manchester', 'Liverpool', 'Greater Manchester'])
+    if rows_count == 0:
+        uk_main_data = gather_uk_main_data()
+        uk_main_data_to_save = prepare_uk_main_data(uk_main_data)
+        save_uk_main_data(uk_main_data_to_save)
+        print('uk general table updated')
+
+        all_general_data = get_all_records()
+
+        # uk units
+        uk_units_data = gather_uk_units_data()
+        uk_units_data_to_save = prepare_uk_units_data(uk_units_data, all_general_data)
+        save_uk_units_data(uk_units_data_to_save)
+        print('uk units table updated')
 
     # general
-    main_data = gather_main_data()
-    main_data_to_save = prepare_main_data(main_data)
-    save_main_data(main_data_to_save)
+    rows_count = check_today_sync('Singapore')
+    if rows_count == 0:
+        main_data = gather_main_data()
+        main_data_to_save = prepare_main_data(main_data)
+        save_main_data(main_data_to_save)
+        print('general table updated')
+
+        all_general_data = get_all_records()
+
+        # units
+        units_data = gather_units_data()
+        units_data_to_save = prepare_units_data(units_data, all_general_data)
+        save_units_data(units_data_to_save)
+        print('units table updated')
+
     delete_old_main_data()
-    print('general table updated')
-
-    all_general_data = get_all_records()
-
-    # units
-    units_data = gather_units_data()
-    units_data_to_save = prepare_units_data(units_data, all_general_data)
-    save_units_data(units_data_to_save)
-    print('units table updated')
-
-    # miami units
-    miami_units_data = gather_miami_units_data()
-    miami_units_data_to_save = prepare_miami_units_data(miami_units_data, all_general_data)
-    save_miami_units_data(miami_units_data_to_save)
-    print('miami units table updated')
-
-    # uk units
-    uk_units_data = gather_uk_units_data()
-    uk_units_data_to_save = prepare_uk_units_data(uk_units_data, all_general_data)
-    save_uk_units_data(uk_units_data_to_save)
-    print('uk units table updated')
-
-    # bali units
-    bali_units_data = gather_bali_units_data()
-    bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
-    save_bali_units_data(bali_units_data_to_save)
-    print('bali units table updated')
-
-    # dubai units
-    dubai_units_data = gather_dubai_units_data()
-    dubai_units_data_to_save = prepare_dubai_units_data(dubai_units_data, all_general_data)
-    save_dubai_units_data(dubai_units_data_to_save)
-    print('dubai units table updated')
-
     delete_units_with_no_general()
 
     # amenities
@@ -332,3 +354,307 @@ def make_tg_reports():
     wolsen_general_report(select_count, company_count, available_count, round(complete_percentage, 2),
                           round(units_complete_percentage, 2), round(percentage_size_min, 2),
                           round(percentage_num_bedrooms, 2), round(percentage_floor_plan_image_links, 2))
+
+
+def fill_empty_overall_fields(raw_data):
+    units_data = []
+    fields_to_keep = ['unit_type', 'price_min', 'available_units', 'size_min', 'size_max', 'price_max',
+                      'General']
+    for item in raw_data:
+        try:
+            if item['fields']['General']:
+                new_dict = {key: item['fields'][key] for key in fields_to_keep if key in item['fields']}
+                units_data.append(new_dict)
+        except KeyError:
+            continue
+
+    overall_available_units_data = {}
+    for item in units_data:
+        if 'available_units' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_available_units_data:
+                overall_available_units_data[general_key] += item['available_units']
+            else:
+                overall_available_units_data[general_key] = item['available_units']
+
+    overall_min_unit_size_data = {}
+    for item in units_data:
+        if 'size_min' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_min_unit_size_data:
+                overall_min_unit_size_data[general_key] = min(overall_min_unit_size_data[general_key], item['size_min'])
+            else:
+                overall_min_unit_size_data[general_key] = item['size_min']
+
+    overall_max_unit_size_data = {}
+    for item in units_data:
+        if 'size_max' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_max_unit_size_data:
+                overall_max_unit_size_data[general_key] = max(overall_max_unit_size_data[general_key], item['size_max'])
+            else:
+                overall_max_unit_size_data[general_key] = item['size_max']
+
+    for i in units_data:
+        try:
+            i['overall_min_unit_psf'] = i['price_min'] / i['size_min']
+        except Exception:
+            pass
+        try:
+            i['overall_max_unit_psf'] = i['price_max'] / i['size_max']
+        except Exception:
+            continue
+    overall_min_unit_psf_data = {}
+    for item in units_data:
+        if 'overall_min_unit_psf' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_min_unit_psf_data:
+                overall_min_unit_psf_data[general_key] = min(overall_min_unit_psf_data[general_key],
+                                                             item['overall_min_unit_psf'])
+            else:
+                overall_min_unit_psf_data[general_key] = item['overall_min_unit_psf']
+
+    overall_max_unit_psf_data = {}
+    for item in units_data:
+        if 'overall_max_unit_psf' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_max_unit_psf_data:
+                overall_max_unit_psf_data[general_key] = max(overall_max_unit_psf_data[general_key],
+                                                             item['overall_max_unit_psf'])
+            else:
+                overall_max_unit_psf_data[general_key] = item['overall_max_unit_psf']
+
+    overall_min_unit_price = {}
+    for item in units_data:
+        if 'price_min' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_min_unit_price:
+                overall_min_unit_price[general_key] = min(overall_min_unit_price[general_key],
+                                                          item['price_min'])
+            else:
+                overall_min_unit_price[general_key] = item['price_min']
+
+    overall_max_unit_price = {}
+    for item in units_data:
+        if 'price_max' in item and 'General' in item and item['General']:
+            general_key = item['General'][0]
+            if general_key in overall_max_unit_price:
+                overall_max_unit_price[general_key] = max(overall_max_unit_price[general_key],
+                                                          item['price_max'])
+            else:
+                overall_max_unit_price[general_key] = item['price_max']
+
+    return overall_available_units_data, \
+           overall_min_unit_size_data, \
+           overall_max_unit_size_data, \
+           overall_min_unit_psf_data, \
+           overall_max_unit_psf_data, \
+           overall_min_unit_price, \
+           overall_max_unit_price
+
+
+def singapore_overall_update():
+    print('singapore overall')
+    # SAOLA OVERALL
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_units_data())
+
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record('keygbB1MnX8GRvpKW', 'app0pXo7PruFurQjq', 'tblJObfY0ty6D34wb', general_id,
+                               'overall_max_unit_price', new_value)
+
+
+def miami_overall_update():
+    print('Miami overall')
+    # MIAMI
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_miami_units_data())
+
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record(
+            'pat01eANVrLAmHO9g.d01b80d2e2b1f45656284ce5ec987e5b06393623f54daf907415b0352cf5a0d7', 'app9O58fJIVtHvrHn',
+            'tblSdjZ6UKZUQ7FU8', general_id,
+            'overall_max_unit_price', new_value)
+
+
+def dubai_overall_update():
+    print('Dubai overall')
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_dubai_units_data())
+    print('here')
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record(
+            'patchZXglSCP5RnWW.26392eeef90ff792693a091fa1e8e882881f0cf3cc9c4a719ba7c6bc91b1db25', 'appoHsQ6y9Ff4cWaW',
+            'tbl76GHXJbJGdOanH', general_id,
+            'overall_max_unit_price', new_value)
+
+
+def uk_overall_update():
+    print('UK overall')
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_uk_units_data())
+
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record(
+            'patMehsoohn9gsPhO.084730f4e5118c35fcdb70dd3345d4e13e3b15beaed541456cf20ec3140e7795', 'app8DMFTDLafaMcKg',
+            'tblR20wKONeGjoqX1', general_id,
+            'overall_max_unit_price', new_value)
+
+
+def call_overall_scripts():
+    uk_overall_update()
+    miami_overall_update()
+    singapore_overall_update()
+    dubai_overall_update()
