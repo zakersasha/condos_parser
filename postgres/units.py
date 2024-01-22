@@ -541,17 +541,17 @@ def check_today_sync(city):
         if type(city) is str:
             query = f"""
             SELECT COUNT(*) FROM general
-            WHERE city = '{city}' AND latest_update = '{formatted_today}';
+            WHERE city = %s AND latest_update = %s;
             """
 
-            cursor.execute(query)
+            cursor.execute(query, (city, formatted_today))
 
             result = cursor.fetchone()
 
             return result[0]
         else:
             query = f"""
-            SELECT COUNT(*) FROM your_table
+            SELECT COUNT(*) FROM general
             WHERE city = ANY(%s) AND latest_update = %s;
             """
 

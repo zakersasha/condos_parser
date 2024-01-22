@@ -19,8 +19,13 @@ def get_old_units_data(existing_data, units):
         upd_data.append(response.json())
         old_data.append(response.json()['fields'])
 
+    list_1_key_set = set()
 
-    list_1_key_set = {(d['unit_type'], d['size_min']) for d in old_data}
+    for d in old_data:
+        try:
+            list_1_key_set.add((d['unit_type'], d['size_min']))
+        except KeyError:
+            continue
     for dict_2 in units:
         if (dict_2['unit_type'], int(dict_2['size_min'])) not in list_1_key_set:
             new_units.append(dict_2)

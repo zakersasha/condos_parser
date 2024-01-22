@@ -83,7 +83,7 @@ def postgres_integration():
         print('bali units table updated')
 
     # oman general
-    rows_count = check_today_sync('Oman')
+    rows_count = check_today_sync(['Muscat', 'Salalah', 'Oman'])
     if rows_count == 0:
         oman_main_data = gather_oman_main_data()
         oman_main_data_to_save = prepare_oman_main_data(oman_main_data)
