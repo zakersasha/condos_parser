@@ -11,14 +11,15 @@ from postgres.general import gather_main_data, prepare_main_data, save_main_data
     gather_miami_main_data, prepare_miami_main_data, save_miami_main_data, gather_uk_main_data, prepare_uk_main_data, \
     save_uk_main_data, gather_dubai_main_data, prepare_dubai_main_data, save_dubai_main_data, get_all_records, \
     gather_oman_main_data, prepare_oman_main_data, save_oman_main_data, gather_bali_main_data, prepare_bali_main_data, \
-    save_bali_main_data, update_airtable_record
+    save_bali_main_data, update_airtable_record, gather_bali_i_main_data, prepare_bali_i_main_data, \
+    save_bali_i_main_data
 from postgres.reports import condo_db_report, condo_partner_report, kofman_general_report, seven_spaces_general_report, \
     wolsen_general_report, condo_partner_report_k7, condo_partner_report_w
 from postgres.units import gather_units_data, prepare_units_data, save_units_data, delete_old_units_data, \
     gather_miami_units_data, prepare_miami_units_data, save_miami_units_data, gather_uk_units_data, save_uk_units_data, \
     prepare_uk_units_data, gather_dubai_units_data, prepare_dubai_units_data, save_dubai_units_data, \
     delete_units_with_no_general, gather_bali_units_data, prepare_bali_units_data, save_bali_units_data, \
-    check_today_sync
+    check_today_sync, gather_bali_i_units_data, prepare_bali_i_units_data, save_bali_i_units_data
 
 
 def postgres_integration():
@@ -81,6 +82,22 @@ def postgres_integration():
         bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
         save_bali_units_data(bali_units_data_to_save)
         print('bali units table updated')
+
+    # bali intermark
+    rows_count = check_today_sync(['Bukit Peninsula', 'Gili Trawangan Island', 'Canggu', 'Ubud'])
+    if rows_count == 0:
+        bali_i_main_data = gather_bali_i_main_data()
+        bali_i_main_data_to_save = prepare_bali_i_main_data(bali_i_main_data)
+        save_bali_i_main_data(bali_i_main_data_to_save)
+        print('bali Intermark general table updated')
+
+        all_general_data = get_all_records()
+
+        # bali intermark units
+        bali_i_units_data = gather_bali_i_units_data()
+        bali_i_units_data_to_save = prepare_bali_i_units_data(bali_i_units_data, all_general_data)
+        save_bali_i_units_data(bali_i_units_data_to_save)
+        print('bali Intermark units table updated')
 
     # oman general
     rows_count = check_today_sync(['Muscat', 'Salalah', 'Oman'])
