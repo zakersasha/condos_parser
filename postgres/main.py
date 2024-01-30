@@ -50,6 +50,7 @@ def postgres_integration():
     s_condos_list_old = get_brochure_condos_list('Saola')
 
     delete_old_units_data()
+    delete_old_main_data()
 
     # dubai general
     rows_count = check_today_sync('Dubai')
@@ -155,7 +156,6 @@ def postgres_integration():
         save_units_data(units_data_to_save)
         print('units table updated')
 
-    delete_old_main_data()
     delete_units_with_no_general()
 
     # amenities
@@ -670,8 +670,116 @@ def uk_overall_update():
             'overall_max_unit_price', new_value)
 
 
+def bali_m_overall_update():
+    print('Bali MARV overall')
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_uk_units_data())
+
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record(
+            'patZ36V2m2fbzEGCr.3f90bb8375f018885977f3dd3e761da6915e1e5ab9be493ab1bfd9c6437e670c', 'app55xAPfpJD3zubt',
+            'tblOuLrGqrN4cbIoe', general_id,
+            'overall_max_unit_price', new_value)
+
+
+def bali_i_overall_update():
+    print('Bali Intermark overall')
+    overall_available_units_data, \
+    overall_min_unit_size_data, \
+    overall_max_unit_size_data, \
+    overall_min_unit_psf_data, \
+    overall_max_unit_psf_data, \
+    overall_min_unit_price, \
+    overall_max_unit_price = fill_empty_overall_fields(gather_uk_units_data())
+
+    for general_id, new_value in overall_available_units_data.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_available_units', new_value)
+
+    for general_id, new_value in overall_min_unit_size_data.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_min_unit_size', new_value)
+
+    for general_id, new_value in overall_max_unit_size_data.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_max_unit_size', new_value)
+
+    for general_id, new_value in overall_min_unit_psf_data.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_min_unit_psf', new_value)
+
+    for general_id, new_value in overall_max_unit_psf_data.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_max_unit_psf', new_value)
+
+    for general_id, new_value in overall_min_unit_price.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_min_unit_price', new_value)
+
+    for general_id, new_value in overall_max_unit_price.items():
+        update_airtable_record(
+            'pat8aakZFTgNDCTlV.76cbff7a26e4da92dcf48b3115eadf8c7004fd1792748aeedcddfc192edfffb5', 'apptB9TeBEoVa9djt',
+            'tblc0nK5MGsmjLrwe', general_id,
+            'overall_max_unit_price', new_value)
+
+
 def call_overall_scripts():
     uk_overall_update()
     miami_overall_update()
     singapore_overall_update()
     dubai_overall_update()
+    bali_m_overall_update()
+    bali_i_overall_update()
