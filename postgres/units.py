@@ -487,13 +487,11 @@ def delete_old_units_data():
     try:
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
-        cur_date = date.today().strftime('%Y-%m-%d')
         delete_sql = """
-                    DELETE FROM units
-                    WHERE latest_update != %s;
+                    DELETE FROM units;
                 """
 
-        cursor.execute(delete_sql, (cur_date,))
+        cursor.execute(delete_sql, )
         connection.commit()
 
         cursor.close()

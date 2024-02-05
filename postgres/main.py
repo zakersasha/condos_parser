@@ -53,108 +53,94 @@ def postgres_integration():
     delete_old_main_data()
 
     # dubai general
-    rows_count = check_today_sync('Dubai')
-    if rows_count == 0:
-        dubai_main_data = gather_dubai_main_data()
-        dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
-        save_dubai_main_data(dubai_main_data_to_save)
-        print('dubai general table updated')
+    dubai_main_data = gather_dubai_main_data()
+    dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
+    save_dubai_main_data(dubai_main_data_to_save)
+    print('dubai general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # dubai units
-        dubai_units_data = gather_dubai_units_data()
-        dubai_units_data_to_save = prepare_dubai_units_data(dubai_units_data, all_general_data)
-        save_dubai_units_data(dubai_units_data_to_save)
-        print('dubai units table updated')
+    # dubai units
+    dubai_units_data = gather_dubai_units_data()
+    dubai_units_data_to_save = prepare_dubai_units_data(dubai_units_data, all_general_data)
+    save_dubai_units_data(dubai_units_data_to_save)
+    print('dubai units table updated')
 
     # bali general
-    rows_count = check_today_sync('Bali')
-    if rows_count == 0:
-        bali_main_data = gather_bali_main_data()
-        bali_main_data_to_save = prepare_bali_main_data(bali_main_data)
-        save_bali_main_data(bali_main_data_to_save)
-        print('bali general table updated')
+    bali_main_data = gather_bali_main_data()
+    bali_main_data_to_save = prepare_bali_main_data(bali_main_data)
+    save_bali_main_data(bali_main_data_to_save)
+    print('bali general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # bali units
-        bali_units_data = gather_bali_units_data()
-        bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
-        save_bali_units_data(bali_units_data_to_save)
-        print('bali units table updated')
+    # bali units
+    bali_units_data = gather_bali_units_data()
+    bali_units_data_to_save = prepare_bali_units_data(bali_units_data, all_general_data)
+    save_bali_units_data(bali_units_data_to_save)
+    print('bali units table updated')
 
     # bali intermark
-    rows_count = check_today_sync(['Bukit Peninsula', 'Gili Trawangan Island', 'Canggu', 'Ubud'])
-    if rows_count == 0:
-        bali_i_main_data = gather_bali_i_main_data()
-        bali_i_main_data_to_save = prepare_bali_i_main_data(bali_i_main_data)
-        save_bali_i_main_data(bali_i_main_data_to_save)
-        print('bali Intermark general table updated')
+    bali_i_main_data = gather_bali_i_main_data()
+    bali_i_main_data_to_save = prepare_bali_i_main_data(bali_i_main_data)
+    save_bali_i_main_data(bali_i_main_data_to_save)
+    print('bali Intermark general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # bali intermark units
-        bali_i_units_data = gather_bali_i_units_data()
-        bali_i_units_data_to_save = prepare_bali_i_units_data(bali_i_units_data, all_general_data)
-        save_bali_i_units_data(bali_i_units_data_to_save)
-        print('bali Intermark units table updated')
+    # bali intermark units
+    bali_i_units_data = gather_bali_i_units_data()
+    bali_i_units_data_to_save = prepare_bali_i_units_data(bali_i_units_data, all_general_data)
+    save_bali_i_units_data(bali_i_units_data_to_save)
+    print('bali Intermark units table updated')
 
     # oman general
-    rows_count = check_today_sync(['Muscat', 'Salalah', 'Oman'])
-    if rows_count == 0:
-        oman_main_data = gather_oman_main_data()
-        oman_main_data_to_save = prepare_oman_main_data(oman_main_data)
-        save_oman_main_data(oman_main_data_to_save)
-        print('oman general table updated')
+    oman_main_data = gather_oman_main_data()
+    oman_main_data_to_save = prepare_oman_main_data(oman_main_data)
+    save_oman_main_data(oman_main_data_to_save)
+    print('oman general table updated')
 
     # miami general
-    rows_count = check_today_sync('Miami')
-    if rows_count == 0:
-        miami_main_data = gather_miami_main_data()
-        miami_main_data_to_save = prepare_miami_main_data(miami_main_data)
-        save_miami_main_data(miami_main_data_to_save)
-        print('miami general table updated')
+    miami_main_data = gather_miami_main_data()
+    miami_main_data_to_save = prepare_miami_main_data(miami_main_data)
+    save_miami_main_data(miami_main_data_to_save)
+    print('miami general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # miami units
-        miami_units_data = gather_miami_units_data()
-        miami_units_data_to_save = prepare_miami_units_data(miami_units_data, all_general_data)
-        save_miami_units_data(miami_units_data_to_save)
-        print('miami units table updated')
+    # miami units
+    miami_units_data = gather_miami_units_data()
+    miami_units_data_to_save = prepare_miami_units_data(miami_units_data, all_general_data)
+    save_miami_units_data(miami_units_data_to_save)
+    print('miami units table updated')
 
     # uk general
-    rows_count = check_today_sync(['Birmingham', 'Manchester', 'Liverpool', 'Greater Manchester'])
-    if rows_count == 0:
-        uk_main_data = gather_uk_main_data()
-        uk_main_data_to_save = prepare_uk_main_data(uk_main_data)
-        save_uk_main_data(uk_main_data_to_save)
-        print('uk general table updated')
+    uk_main_data = gather_uk_main_data()
+    uk_main_data_to_save = prepare_uk_main_data(uk_main_data)
+    save_uk_main_data(uk_main_data_to_save)
+    print('uk general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # uk units
-        uk_units_data = gather_uk_units_data()
-        uk_units_data_to_save = prepare_uk_units_data(uk_units_data, all_general_data)
-        save_uk_units_data(uk_units_data_to_save)
-        print('uk units table updated')
+    # uk units
+    uk_units_data = gather_uk_units_data()
+    uk_units_data_to_save = prepare_uk_units_data(uk_units_data, all_general_data)
+    save_uk_units_data(uk_units_data_to_save)
+    print('uk units table updated')
 
     # general
-    rows_count = check_today_sync('Singapore')
-    if rows_count == 0:
-        main_data = gather_main_data()
-        main_data_to_save = prepare_main_data(main_data)
-        save_main_data(main_data_to_save)
-        print('general table updated')
+    main_data = gather_main_data()
+    main_data_to_save = prepare_main_data(main_data)
+    save_main_data(main_data_to_save)
+    print('general table updated')
 
-        all_general_data = get_all_records()
+    all_general_data = get_all_records()
 
-        # units
-        units_data = gather_units_data()
-        units_data_to_save = prepare_units_data(units_data, all_general_data)
-        save_units_data(units_data_to_save)
-        print('units table updated')
+    # units
+    units_data = gather_units_data()
+    units_data_to_save = prepare_units_data(units_data, all_general_data)
+    save_units_data(units_data_to_save)
+    print('units table updated')
 
     delete_units_with_no_general()
 

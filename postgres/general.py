@@ -634,13 +634,11 @@ def delete_old_main_data():
     try:
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
-        cur_date = date.today().strftime('%Y-%m-%d')
         delete_sql = """
-                    DELETE FROM general
-                    WHERE latest_update != %s;
+                    DELETE FROM general;
                 """
 
-        cursor.execute(delete_sql, (cur_date,))
+        cursor.execute(delete_sql,)
         connection.commit()
 
         cursor.close()
