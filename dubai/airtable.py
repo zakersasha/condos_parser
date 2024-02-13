@@ -1,9 +1,12 @@
+import os
 import time
 
 import requests
+from dotenv import load_dotenv
 
-token = "patAtUpABzM9pPvIG.b6c28f6914a15e258f824d6e1ba066c4919c232c00028cc0c34476c477660456"
-base_id = "appoHsQ6y9Ff4cWaW"
+load_dotenv()
+token = os.environ.get("DUBAI_BASE_ID")
+base_id = os.environ.get("DUBAI_TOKEN")
 
 
 def get_general_records():
@@ -59,12 +62,8 @@ def create_record(table_name, records):
                         headers={"Authorization": f"Bearer {token}", "Content-type": "application/json"}).text)
 
 
-# print(get_general_records())
-#
 def update_record(table_name, records, record_id):
     records["typecast"] = True
     print(requests.patch(f"https://api.airtable.com/v0/{base_id}/{table_name}/{record_id}",
                          json=records,
                          headers={"Authorization": f"Bearer {token}", "Content-type": "application/json"}).text)
-
-# get_units_records(get_general_records())
