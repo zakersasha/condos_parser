@@ -18,6 +18,8 @@ def gather_condos_list():
 
     for condo in condos_list:
         if 'https' in condo['href']:
+            if 'theresidencesat1428brickell' in condo['href']:
+                continue
             response.append(condo['href'])
     return list(set(response))
 
