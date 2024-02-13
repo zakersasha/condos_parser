@@ -4,7 +4,14 @@
 - Количество новых кондо
 - Количество кондо с overall_available_units>0 (в сравнении с предыдущим днем: указать фактическое количество и прирост)
 """
+import os
+
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+bot_token = os.environ.get('BOT_TOKEN')
+chat_id = os.environ.get('CHAT_ID')
 
 
 def condo_db_report(city, date_time, new_condos, fact_condos, available_condos_count):
@@ -13,9 +20,6 @@ def condo_db_report(city, date_time, new_condos, fact_condos, available_condos_c
               f'Новых кондо: ➕ {new_condos}\n\n' \
               f'Всего кондо с доступными юнитами: {fact_condos}\n' \
               f'Кондо с доступными юнитами прирост: ➕ {available_condos_count}\n'
-
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
 
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
@@ -53,9 +57,6 @@ def condo_partner_report(partner,
               f'Кондо с ценой всего: {min_price_condos_all}\n' \
               f'Кондо с ценой прирост: ➕ {min_price_condos_counter}\n' \
               f'Новые брошюры: {condos_list}\n'
-
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
 
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
@@ -96,9 +97,6 @@ def condo_partner_report_w(partner,
               f'Процент полноты payment_plans_attached: {round(percentage_data[10], 2)} %\n' \
               f'Процент полноты Units: {round(percentage_data[11], 2)} %\n'
 
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
-
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
 
@@ -136,9 +134,6 @@ def condo_partner_report_k7(partner,
               f'Процент полноты description: {round(percentage_data[8], 2)} %\n' \
               f'Процент полноты payment_plans: {round(percentage_data[9], 2)} %\n' \
               f'Процент полноты Units: {round(percentage_data[10], 2)} %\n'
-
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
 
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
@@ -184,9 +179,6 @@ def kofman_general_report(select_count, company_count, available_count, complete
               f'Процент полноты price_min: {percentage_price_min} %\n' \
               f'Процент полноты psf_min: {percentage_psf_min} %\n'
 
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
-
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
 
@@ -205,9 +197,6 @@ def seven_spaces_general_report(select_count, company_count, available_count, co
               f'Процент полноты floor_plan_image_links: {percentage_floor_plan_image_links} %\n' \
               f'Процент полноты price_min: {percentage_price_min} %\n' \
               f'Процент полноты psf_min: {percentage_psf_min} %\n'
-
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
 
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
@@ -249,9 +238,6 @@ def wolsen_general_report(select_count, company_count, available_count, complete
               f'Процент полноты size_min: {percentage_size_min} %\n' \
               f'Процент полноты num_bedrooms: {percentage_num_bedrooms} %\n' \
               f'Процент полноты floor_plan_image_links: {percentage_floor_plan_image_links} %\n'
-
-    bot_token = '6559406117:AAHwaGZTdRnB259blt5A9EX7VU-oX2YL5nw'
-    chat_id = '-1002134207391'
 
     url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
     requests.post(url_text)
