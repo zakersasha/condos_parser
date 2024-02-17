@@ -323,7 +323,11 @@ def save_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -362,7 +366,11 @@ def save_dubai_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -399,7 +407,11 @@ def save_miami_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -436,7 +448,11 @@ def save_uk_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -473,7 +489,11 @@ def save_bali_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -649,7 +669,11 @@ def save_bali_i_units_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()

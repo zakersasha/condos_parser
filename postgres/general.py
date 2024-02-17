@@ -251,7 +251,12 @@ def save_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -300,7 +305,11 @@ def save_dubai_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -339,7 +348,11 @@ def save_bali_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -382,7 +395,11 @@ def save_miami_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -423,7 +440,11 @@ def save_uk_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -462,7 +483,11 @@ def save_oman_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
@@ -638,7 +663,7 @@ def delete_old_main_data():
                     DELETE FROM general;
                 """
 
-        cursor.execute(delete_sql,)
+        cursor.execute(delete_sql, )
         connection.commit()
 
         cursor.close()
@@ -768,7 +793,11 @@ def save_bali_i_main_data(data):
 
     try:
         cursor = connection.cursor()
-        cursor.executemany(insert_sql, formatted_data)
+        for record in formatted_data:
+            try:
+                cursor.execute(insert_sql, record)
+            except Exception:
+                continue
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
