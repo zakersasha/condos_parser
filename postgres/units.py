@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import psycopg2
 import requests
@@ -505,13 +505,15 @@ def save_bali_units_data(data):
 
 def delete_old_units_data():
     try:
+        current_date = datetime.now().strftime("%Y-%m-%d")
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
-        delete_sql = """
-                    DELETE FROM units;
-                """
 
-        cursor.execute(delete_sql, )
+        delete_sql = """
+                                DELETE FROM general
+                                WHERE latest_update != %s;
+                            """
+        cursor.execute(delete_sql, (current_date,))
         connection.commit()
 
         cursor.close()

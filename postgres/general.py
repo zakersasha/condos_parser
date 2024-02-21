@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, datetime
 
 import psycopg2
 import requests
@@ -657,13 +657,15 @@ def prepare_uk_main_data(main_data):
 
 def delete_old_main_data():
     try:
+        current_date = datetime.now().strftime("%Y-%m-%d")
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
-        delete_sql = """
-                    DELETE FROM general;
-                """
 
-        cursor.execute(delete_sql, )
+        delete_sql = """
+                        DELETE FROM general
+                        WHERE latest_update != %s;
+                    """
+        cursor.execute(delete_sql, (current_date,))
         connection.commit()
 
         cursor.close()

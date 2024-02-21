@@ -49,9 +49,6 @@ def postgres_integration():
     w_condos_list_old = get_brochure_condos_list('Wolsen')
     s_condos_list_old = get_brochure_condos_list('Saola')
 
-    delete_old_units_data()
-    delete_old_main_data()
-
     # dubai general
     dubai_main_data = gather_dubai_main_data()
     dubai_main_data_to_save = prepare_dubai_main_data(dubai_main_data)
@@ -143,6 +140,8 @@ def postgres_integration():
     print('units table updated')
 
     delete_units_with_no_general()
+    delete_old_main_data()
+    delete_old_units_data()
 
     # amenities
     try:
