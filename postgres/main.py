@@ -140,8 +140,8 @@ def postgres_integration():
     print('units table updated')
 
     delete_units_with_no_general()
-    delete_old_main_data()
     delete_old_units_data()
+    delete_old_main_data()
 
     # amenities
     try:

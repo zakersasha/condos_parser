@@ -15,21 +15,21 @@ if __name__ == '__main__':
     schedule = AsyncIOScheduler({'apscheduler.job_defaults.max_instances': 2})
 
     # New launcher
-    schedule.add_job(parse_new_launcher, 'cron', hour=8)
+    schedule.add_job(parse_new_launcher, 'cron', hour=4)
 
     # Srx
     # schedule.add_job(parse_srx, 'cron', hour=16, minute=14)
 
     # New launcher.sg
-    schedule.add_job(parse_new_launcher_sg, 'cron', hour=9, minute=30)
+    schedule.add_job(parse_new_launcher_sg, 'cron', hour=5, minute=30)
 
-    schedule.add_job(parse_miami, 'cron', hour=11, minute=30)
-    schedule.add_job(parse_uk, 'cron', hour=13, minute=30)
-    schedule.add_job(parse_dubai, 'cron', hour=15, minute=30)
+    schedule.add_job(parse_miami, 'cron', hour=7)
+    schedule.add_job(parse_uk, 'cron', hour=8, minute=30)
+    schedule.add_job(parse_dubai, 'cron', hour=11, minute=30)
 
     # Postgres recording
-    schedule.add_job(call_overall_scripts, 'cron', hour=18)
-    schedule.add_job(postgres_integration, 'cron', hour=20)
+    schedule.add_job(call_overall_scripts, 'cron', hour=14)
+    schedule.add_job(postgres_integration, 'cron', hour=16)
 
     schedule.start()
 
