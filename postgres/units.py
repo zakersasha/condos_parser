@@ -510,7 +510,7 @@ def delete_old_units_data():
         cursor = connection.cursor()
 
         delete_sql = """
-                                DELETE FROM general
+                                DELETE FROM units
                                 WHERE latest_update != %s;
                             """
         cursor.execute(delete_sql, (current_date,))
@@ -546,9 +546,11 @@ def delete_units_with_no_general():
 
 def find_dict_with_string(lst, search_string):
     for d in lst:
+        cur = datetime.now().strftime("%Y-%m-%d")
         if d.get('units', None):
-            if search_string in d.get('units', []):
-                return d['id']
+            if d.get('latest_update', None) == cur:
+                if search_string in d.get('units', []):
+                    return d['id']
 
 
 def check_today_sync(city):
