@@ -1,9 +1,11 @@
 import json
+import os
 from datetime import date, datetime
 
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 from config import Config
 from postgres.db import db_params
@@ -240,6 +242,7 @@ def save_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -254,12 +257,16 @@ def save_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 30:
+                    tg_error_message(e, 'Singapore')
                 continue
 
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Singapore')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -294,6 +301,7 @@ def save_dubai_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -308,11 +316,16 @@ def save_dubai_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 30:
+                    tg_error_message(e, 'Dubai')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Dubai')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -337,6 +350,7 @@ def save_bali_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -351,11 +365,16 @@ def save_bali_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 5:
+                    tg_error_message(e, 'Bali')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Bali')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -384,6 +403,7 @@ def save_miami_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -398,11 +418,16 @@ def save_miami_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 5:
+                    tg_error_message(e, 'Miami')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Miami')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -429,6 +454,7 @@ def save_uk_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -443,11 +469,16 @@ def save_uk_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 20:
+                    tg_error_message(e, 'UK')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'UK')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -472,6 +503,7 @@ def save_oman_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -486,11 +518,16 @@ def save_oman_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 10:
+                    tg_error_message(e, 'Oman')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Oman')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
@@ -672,6 +709,7 @@ def delete_old_main_data():
 
         print("Rows deleted successfully.")
     except Exception as e:
+        tg_error_delete_condos(e)
         print(f"Error: {e}")
 
 
@@ -784,6 +822,7 @@ def save_bali_i_main_data(data):
     """
 
     formatted_data = []
+    error_counter = 0
     for record in data:
         formatted_record = {}
         for key in insert_sql.split('%(')[1:]:
@@ -798,12 +837,36 @@ def save_bali_i_main_data(data):
         for record in formatted_data:
             try:
                 cursor.execute(insert_sql, record)
-            except Exception:
+            except Exception as e:
+                error_counter += 1
+                if error_counter == 5:
+                    tg_error_message(e, 'Bali Intermark')
                 continue
+
         connection.commit()
     except psycopg2.Error as e:
         connection.rollback()
+        tg_error_message(e, 'Bali Intermark')
         print("Ошибка при вставке записей:", e)
     finally:
         cursor.close()
         connection.close()
+
+
+load_dotenv()
+bot_token = os.environ.get('BOT_TOKEN')
+chat_id = os.environ.get('CHAT_ID')
+
+
+def tg_error_message(error, company):
+    message = f"Ошибка при записи в postgres кондо {company}\n\n" \
+              f"{error}"
+    url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+    requests.post(url_text)
+
+
+def tg_error_delete_condos(error):
+    message = f"Ошибка при удалении дублей кондо\n\n" \
+              f"{error}"
+    url_text = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={message}'
+    requests.post(url_text)
