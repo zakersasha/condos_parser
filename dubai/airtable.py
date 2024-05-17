@@ -1,19 +1,18 @@
-import os
 import time
 
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-token = os.environ.get("DUBAI_BASE_ID")
-base_id = os.environ.get("DUBAI_TOKEN")
+token = 'pati6FgjWtrwMfAkF.21bf4471ca9d4be62f20e80b89d3a2fca965b328919cfc0026e43da10ddd3107'
+base_id = "appoHsQ6y9Ff4cWaW"
 
 
 def get_general_records():
     all_records = {"ids": []}
     offset = ""
     while offset is not None:
-        response = requests.get(f"https://api.airtable.com/v0/{base_id}/General copy?offset={offset}",
+        response = requests.get(f"https://api.airtable.com/v0/{base_id}/General?offset={offset}",
                                 headers={"Authorization": f"Bearer {token}", "Content-type": "application/json"}).json()
 
         for record in response["records"]:
@@ -36,21 +35,23 @@ def get_units_records(all_records):
     offset = ""
     counter = 0
     while offset is not None:
-        response = requests.get(f"https://api.airtable.com/v0/{base_id}/Units Info copy?offset={offset}",
+        response = requests.get(f"https://api.airtable.com/v0/{base_id}/Units Info?offset={offset}",
                                 headers={"Authorization": f"Bearer {token}", "Content-type": "application/json"}).json()
 
         for record in response["records"]:
-            counter += 1
-            general_id = record["fields"]["General"][0]
+            try:
+                counter += 1
+                general_id = record["fields"]["General"][0]
 
-            if general_id not in all_records["ids"]:
+                if general_id not in all_records["ids"]:
+                    continue
+
+                if not all_units.get(general_id, False):
+                    all_units[general_id] = [record]
+                else:
+                    all_units[general_id].append(record)
+            except Exception:
                 continue
-
-            if not all_units.get(general_id, False):
-                all_units[general_id] = [record]
-
-            # all_units[general_id].append()
-
         offset = response.get("offset", None)
     return all_units
 

@@ -45,11 +45,21 @@ def get_data_by_entity(entity):
     url = f"https://alnair.ae/app/view/{id}"
     brochure = ""
     documents = addition_data.get("documents", False)
+    link_to_brochure = ""
+
     if documents:
         for doc in documents:
-            if doc["title"] == "BROCHURE":
-                brochure = doc["url"]
-                break
+            try:
+                if 'brochure' in doc["title"].lower():
+                    brochure = doc["url"]
+                    link_to_brochure = doc["url"]
+                    break
+                else:
+                    brochure = doc['url']
+                    link_to_brochure = doc["url"]
+                    break
+            except Exception:
+                pass
 
     payment_plans_result = []
     payment_plans = addition_data.get('paymentPlans', False)
@@ -123,15 +133,18 @@ def get_data_by_entity(entity):
         overall_min_unit_psf = round(overall_min_unit_price / overall_min_unit_size)
         overall_max_unit_psf = round(overall_max_unit_price / overall_max_unit_size)
 
-    residential_complex_advantages = None
-    if addition_data.get("catalogs", False):
-        if addition_data["catalogs"].get("residential_complex_advantages", False):
-            residential_complex_advantages = []
-            for id_ in addition_data["catalogs"]["residential_complex_advantages"]:
-                for id__ in residential_complex_info:
-                    if id_ == id__["id"]:
-                        residential_complex_advantages.append(id__["value"])
-                        break
+    try:
+        residential_complex_advantages = None
+        if addition_data.get("catalogs", False):
+            if addition_data["catalogs"].get("residential_complex_advantages", False):
+                residential_complex_advantages = []
+                for id_ in addition_data["catalogs"]["residential_complex_advantages"]:
+                    for id__ in residential_complex_info:
+                        if id_ == id__["id"]:
+                            residential_complex_advantages.append(id__["value"])
+                            break
+    except Exception:
+        residential_complex_advantages = None
 
     units_ = []
     for unit in units:
@@ -192,7 +205,8 @@ def get_data_by_entity(entity):
 
     return {"fields": {"name": name, "Condo ID": condo_id, "address": address, "district parsing": district,
                        "units_number": units_number, "date_of_completion": date_of_completion,
-                       "link_to_condo": url, "brochure": brochure, "overall_available_units": overall_available_units,
+                       "link_to_condo": url, "brochure": brochure, "link_to_brochure": link_to_brochure,
+                       "overall_available_units": overall_available_units,
                        "description": description, "facilities": residential_complex_advantages,
                        "overall_min_unit_size": overall_min_unit_size, "overall_max_unit_size": overall_max_unit_size,
                        "overall_min_unit_psf": overall_min_unit_psf, "overall_max_unit_psf": overall_max_unit_psf,
