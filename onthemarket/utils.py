@@ -35,8 +35,10 @@ def parse_page(projects_link, city):
         gathered_links.append(href['href'])
     try:
         brochure = [s for s in gathered_links if s.endswith(".pdf")][0]
+        link_to_brochure = brochure
     except IndexError:
         brochure = None
+        link_to_brochure = None
 
     parts = link_to_condo.split('/')
     condo_id = ''.join(parts[-2:])
@@ -54,6 +56,7 @@ def parse_page(projects_link, city):
         'city': city,
         'description': description,
         'brochure': brochure,
+        'link_to_brochure': link_to_brochure
     }
 
 

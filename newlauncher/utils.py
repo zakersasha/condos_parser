@@ -36,8 +36,10 @@ async def gather_project_details(soup, url):
     try:
         brochure = soup.find("a", class_='btn btn-sm btn-outline-primary d-inline-flex align-items-center')['href']
         details_data['brochure'] = [{"url": brochure.replace(' ', '%20')}]
+        details_data['link_to_brochure'] = brochure.replace(' ', '%20')
     except TypeError:
         details_data['brochure'] = None
+        details_data['link_to_brochure'] = None
 
     items = [item.text.replace('\n', '') for item in project_details]
 

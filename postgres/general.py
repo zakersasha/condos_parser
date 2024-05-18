@@ -225,7 +225,7 @@ def save_main_data(data):
         overall_min_unit_price, overall_max_unit_price,
         location_map_attachments, units, amenities,
         floor_plans_urls, site_plans_urls,
-        "Condo ID", latest_update, description, city, companies, selected, caption
+        "Condo ID", latest_update, description, city, companies, selected, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(type)s, %(units_number)s, %(units_size)s,
@@ -237,7 +237,7 @@ def save_main_data(data):
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(location_map_attachments)s, %(units)s, %(amenities)s,
         %(floor_plans_urls)s, %(site_plans_urls)s,
-        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(companies)s, %(selected)s, %(caption)s
+        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(companies)s, %(selected)s, %(caption)s, %(link_to_brochure)s
     );
     """
 
@@ -286,7 +286,7 @@ def save_dubai_main_data(data):
         overall_min_unit_psf, overall_max_unit_psf,
         overall_min_unit_price, overall_max_unit_price,
         units, site_plans_urls,
-        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies, selected, caption
+        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies, selected, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(date_of_completion)s,
@@ -296,7 +296,7 @@ def save_dubai_main_data(data):
         %(overall_min_unit_psf)s, %(overall_max_unit_psf)s,
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(units)s, %(site_plans_urls)s,
-        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s, %(selected)s, %(caption)s
+        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s, %(selected)s, %(caption)s, %(link_to_brochure)s
     ) RETURNING id;
     """
 
@@ -339,13 +339,13 @@ def save_bali_main_data(data):
     insert_sql = """
     INSERT INTO general (
         name, address, district, units_number, link_to_condo, brochure, facilities,
-        overall_available_units, units, "Condo ID", latest_update, city, companies, tenure, caption
+        overall_available_units, units, "Condo ID", latest_update, city, companies, tenure, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(link_to_condo)s,
         %(brochure)s, %(facilities)s, %(overall_available_units)s,
         %(units)s,
-        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(tenure)s, %(caption)s
+        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(tenure)s, %(caption)s, %(link_to_brochure)s
     ) RETURNING id;
     """
 
@@ -391,14 +391,14 @@ def save_miami_main_data(data):
         link_to_condo, facilities, payment_plans,
         overall_min_unit_size, overall_max_unit_size,
         overall_min_unit_psf, overall_min_unit_price,
-        units, "Condo ID", latest_update, description, city, features, companies, selected, payment_plans_attached, caption
+        units, "Condo ID", latest_update, description, city, features, companies, selected, payment_plans_attached, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(date_of_completion)s,
         %(link_to_condo)s, %(facilities)s, %(payment_plans)s,
         %(overall_min_unit_size)s, %(overall_max_unit_size)s,
         %(overall_min_unit_psf)s,%(overall_min_unit_price)s,
-        %(units)s, %(condo_id)s, %(latest_update)s, %(description)s, %(city)s, %(features)s, %(companies)s, %(selected)s, %(payment_plans_attached)s, %(caption)s
+        %(units)s, %(condo_id)s, %(latest_update)s, %(description)s, %(city)s, %(features)s, %(companies)s, %(selected)s, %(payment_plans_attached)s, %(caption)s, %(link_to_brochure)s
     ) RETURNING id;
     """
 
@@ -442,14 +442,14 @@ def save_uk_main_data(data):
     INSERT INTO general (
         name, address,
         link_to_condo, facilities, overall_min_unit_price, overall_max_unit_price,
-        units, "Condo ID", latest_update, description, city, brochure, tenure, overall_available_units, companies, district, caption
+        units, "Condo ID", latest_update, description, city, brochure, tenure, overall_available_units, companies, district, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s,
         %(link_to_condo)s, %(facilities)s,
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(units)s, %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(brochure)s, %(tenure)s, 
-        %(overall_available_units)s, %(companies)s, %(district)s, %(caption)s
+        %(overall_available_units)s, %(companies)s, %(district)s, %(caption)s, %(link_to_brochure)s
     );
     """
 
@@ -492,13 +492,13 @@ def save_oman_main_data(data):
     insert_sql = """
     INSERT INTO general (
         name, link_to_condo, district, overall_available_units,
-        overall_min_unit_price, overall_min_unit_psf, "Condo ID", latest_update, city, companies, caption
+        overall_min_unit_price, overall_min_unit_psf, "Condo ID", latest_update, city, companies, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(link_to_condo)s,
         %(district)s, %(overall_available_units)s,
         %(overall_min_unit_price)s, %(overall_min_unit_psf)s,
-        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(caption)s
+        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(caption)s, %(link_to_brochure)s
     );
     """
 
@@ -551,6 +551,10 @@ def prepare_main_data(main_data):
             data['brochure'] = [link["url"] for link in data["brochure"]]
         except KeyError:
             pass
+        try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
         try:
             data['site_plans_attachments'] = [link["url"] for link in data["site_plans_attachments"]]
         except KeyError:
@@ -606,6 +610,10 @@ def prepare_dubai_main_data(main_data):
         except KeyError:
             data['caption'] = None
         try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
+        try:
             data['Condo ID'] = str(data['Condo ID'])
         except (ValueError, KeyError):
             pass
@@ -634,6 +642,10 @@ def prepare_bali_main_data(main_data):
         except KeyError:
             data['caption'] = None
         try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
+        try:
             data['Condo ID'] = str(data['Condo ID'])
         except (ValueError, KeyError):
             pass
@@ -658,6 +670,10 @@ def prepare_oman_main_data(main_data):
         except KeyError:
             data['caption'] = None
         try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
+        try:
             data['Condo ID'] = str(data['Condo ID'])
         except (ValueError, KeyError):
             pass
@@ -677,6 +693,10 @@ def prepare_miami_main_data(main_data):
                 data['payment_plans_attached'] = [data['payment_plans_attached'][0]['url']]
         except KeyError:
             pass
+        try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
         try:
             if not data['caption']:
                 data['caption'] = None
@@ -704,6 +724,10 @@ def prepare_uk_main_data(main_data):
             data['brochure'] = [data['brochure']]
         except KeyError:
             pass
+        try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
         try:
             if not data['caption']:
                 data['caption'] = None
@@ -821,6 +845,10 @@ def prepare_bali_i_main_data(main_data):
         data = item['fields']
         data['latest_update'] = date.today().strftime('%Y-%m-%d')
         try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
+        try:
             if not data['caption']:
                 data['caption'] = None
         except KeyError:
@@ -846,13 +874,13 @@ def save_bali_i_main_data(data):
     insert_sql = """
     INSERT INTO general (
         name, address, district, units_number, link_to_condo, brochure, facilities,
-        overall_available_units, units, "Condo ID", latest_update, city, companies, caption
+        overall_available_units, units, "Condo ID", latest_update, city, companies, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(link_to_condo)s,
         %(brochure)s, %(facilities)s, %(overall_available_units)s,
         %(units)s,
-        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(caption)s
+        %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, %(caption)s, %(link_to_brochure)s
     ) RETURNING id;
     """
 
@@ -924,6 +952,10 @@ def prepare_sbali_main_data(main_data):
         data = item['fields']
         data['latest_update'] = date.today().strftime('%Y-%m-%d')
         try:
+            data['link_to_brochure'] = data['link_to_brochure']
+        except KeyError:
+            data['link_to_brochure'] = ""
+        try:
             if not data['caption']:
                 data['caption'] = None
         except KeyError:
@@ -970,14 +1002,14 @@ def save_sbali_main_data(data):
     INSERT INTO general (
         name, address, district, units_number, link_to_condo, brochure, facilities,
         overall_available_units, units, "Condo ID", latest_update, city, companies, developer, location, commission, 
-        developer_links, developer_website, date_of_completion, tenure, area, overall_min_unit_size, overall_min_unit_price, caption
+        developer_links, developer_website, date_of_completion, tenure, area, overall_min_unit_size, overall_min_unit_price, caption, link_to_brochure
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(link_to_condo)s,
         %(brochure)s, %(facilities)s, %(overall_available_units)s,
         %(units)s, %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, 
         %(developer)s, %(location)s, %(commission)s, %(developer_links)s, %(developer_website)s, %(date_of_completion)s,
-         %(tenure)s, %(area)s, %(overall_min_unit_size)s, %(overall_min_unit_price)s, %(caption)s
+         %(tenure)s, %(area)s, %(overall_min_unit_size)s, %(overall_min_unit_price)s, %(caption)s, %(link_to_brochure)s
     ) RETURNING id;
     """
 
