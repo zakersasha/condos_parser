@@ -989,6 +989,10 @@ def prepare_sbali_main_data(main_data):
                 data['brochure'] = [data['brochure'][0]['url']]
         except KeyError:
             pass
+        try:
+            del data['real name']
+        except KeyError:
+            pass
         main_data_to_save.append(data)
 
     return main_data_to_save
