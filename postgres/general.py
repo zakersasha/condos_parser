@@ -605,15 +605,6 @@ def prepare_dubai_main_data(main_data):
         data = item['fields']
         data['latest_update'] = date.today().strftime('%Y-%m-%d')
         try:
-            if data['nearthesea']:
-                print(data['nearthesea'])
-                print(data['nearthesea'][0])
-                print(type(data['nearthesea']))
-                print(type(data['nearthesea'][0]))
-                data['nearthesea'] = data['nearthesea'][0]
-        except KeyError:
-            data['nearthesea'] = None
-        try:
             if not data['caption']:
                 data['caption'] = None
         except KeyError:
