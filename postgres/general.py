@@ -286,7 +286,7 @@ def save_dubai_main_data(data):
         overall_min_unit_psf, overall_max_unit_psf,
         overall_min_unit_price, overall_max_unit_price,
         units, site_plans_urls,
-        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies, selected, caption, link_to_brochure
+        "Condo ID", latest_update, description, city, longitude, latitude, payment_plans, companies, selected, caption, link_to_brochure, nearthesea
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(date_of_completion)s,
@@ -296,7 +296,7 @@ def save_dubai_main_data(data):
         %(overall_min_unit_psf)s, %(overall_max_unit_psf)s,
         %(overall_min_unit_price)s, %(overall_max_unit_price)s,
         %(units)s, %(site_plans_urls)s,
-        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s, %(selected)s, %(caption)s, %(link_to_brochure)s
+        %(Condo ID)s, %(latest_update)s, %(description)s, %(city)s, %(longitude)s, %(latitude)s, %(payment_plans)s, %(companies)s, %(selected)s, %(caption)s, %(link_to_brochure)s, %(nearthesea)s
     ) RETURNING id;
     """
 
@@ -604,6 +604,15 @@ def prepare_dubai_main_data(main_data):
     for item in main_data:
         data = item['fields']
         data['latest_update'] = date.today().strftime('%Y-%m-%d')
+        try:
+            if data['nearthesea']:
+                print(data['nearthesea'])
+                print(data['nearthesea'][0])
+                print(type(data['nearthesea']))
+                print(type(data['nearthesea'][0]))
+                data['nearthesea'] = data['nearthesea'][0]
+        except KeyError:
+            data['nearthesea'] = None
         try:
             if not data['caption']:
                 data['caption'] = None
@@ -1006,14 +1015,14 @@ def save_sbali_main_data(data):
     INSERT INTO general (
         name, address, district, units_number, link_to_condo, brochure, facilities,
         overall_available_units, units, "Condo ID", latest_update, city, companies, developer, location, commission, 
-        developer_links, developer_website, date_of_completion, tenure, area, overall_min_unit_size, overall_min_unit_price, caption, link_to_brochure
+        developer_links, developer_website, date_of_completion, tenure, area, overall_min_unit_size, overall_min_unit_price, caption, link_to_brochure, Descriptionforselection
     )
     VALUES (
         %(name)s, %(address)s, %(district)s, %(units_number)s, %(link_to_condo)s,
         %(brochure)s, %(facilities)s, %(overall_available_units)s,
         %(units)s, %(Condo ID)s, %(latest_update)s, %(city)s, %(companies)s, 
         %(developer)s, %(location)s, %(commission)s, %(developer_links)s, %(developer_website)s, %(date_of_completion)s,
-         %(tenure)s, %(area)s, %(overall_min_unit_size)s, %(overall_min_unit_price)s, %(caption)s, %(link_to_brochure)s
+         %(tenure)s, %(area)s, %(overall_min_unit_size)s, %(overall_min_unit_price)s, %(caption)s, %(link_to_brochure)s, %(Descriptionforselection)
     ) RETURNING id;
     """
 
